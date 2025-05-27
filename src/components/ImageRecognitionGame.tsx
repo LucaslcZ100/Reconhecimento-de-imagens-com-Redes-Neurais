@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { pipeline } from '@huggingface/transformers';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Brain, Play, RotateCcw, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Brain, Play, RotateCcw, Loader2, CheckCircle, XCircle, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface GameResult {
@@ -23,6 +23,7 @@ const ImageRecognitionGame = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [showExplanation, setShowExplanation] = useState(true);
+  const [userInput, setUserInput] = useState('');
   const { toast } = useToast();
 
   // Imagens educacionais com categorias claras
@@ -63,6 +64,7 @@ const ImageRecognitionGame = () => {
     if (!classifier) return;
 
     setIsProcessing(true);
+    setUserInput(''); // Limpar input anterior
     const randomImage = educationalImages[Math.floor(Math.random() * educationalImages.length)];
     setCurrentImage(randomImage);
 
@@ -103,22 +105,23 @@ const ImageRecognitionGame = () => {
     }
   };
 
-  const handleAnswer = (selectedOption: string) => {
+  const checkAnswer = (answer: string) => {
     if (predictions.length === 0) return;
 
-    const correctAnswer = predictions[0].label;
-    const isCorrect = selectedOption === correctAnswer;
+    const correctAnswer = predictions[0].label.toLowerCase();
+    const isCorrect = answer.toLowerCase().includes(correctAnswer.split(' ')[0]) || 
+                     correctAnswer.includes(answer.toLowerCase());
 
     if (isCorrect) {
       setScore(prev => prev + 10);
       toast({
         title: "🎉 Correto!",
-        description: `Parabéns! A IA identificou corretamente: ${correctAnswer}`,
+        description: `Parabéns! A IA identificou corretamente: ${predictions[0].label}`,
       });
     } else {
       toast({
         title: "📚 Tente novamente!",
-        description: `A IA identificou: ${correctAnswer}. Continue praticando!`,
+        description: `A IA identificou: ${predictions[0].label}. Continue praticando!`,
         variant: "destructive"
       });
     }
@@ -126,6 +129,22 @@ const ImageRecognitionGame = () => {
     setTimeout(() => {
       startNewRound();
     }, 2500);
+  };
+
+  const handleAnswer = (selectedOption: string) => {
+    checkAnswer(selectedOption);
+  };
+
+  const handleTextSubmit = () => {
+    if (userInput.trim()) {
+      checkAnswer(userInput.trim());
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleTextSubmit();
+    }
   };
 
   const resetGame = () => {
@@ -136,6 +155,7 @@ const ImageRecognitionGame = () => {
     setCurrentImage('');
     setGameStarted(false);
     setShowExplanation(true);
+    setUserInput('');
   };
 
   const startGame = () => {
@@ -188,7 +208,7 @@ const ImageRecognitionGame = () => {
                 <p>🔍 <strong>Reconhecimento de Imagens:</strong> A IA usa uma rede neural treinada com milhões de imagens</p>
                 <p>🧠 <strong>Aprendizado:</strong> Ela aprendeu a identificar padrões, formas e características</p>
                 <p>📊 <strong>Confiança:</strong> A IA dá uma porcentagem de certeza para cada identificação</p>
-                <p>🎯 <strong>Seu Desafio:</strong> Tente acertar o que a IA identificou na imagem!</p>
+                <p>🎯 <strong>Seu Desafio:</strong> Digite ou clique no que a IA identificou na imagem!</p>
               </div>
             </CardContent>
           </Card>
@@ -264,18 +284,48 @@ const ImageRecognitionGame = () => {
                     <p className="text-lg">A rede neural está processando...</p>
                   </div>
                 ) : options.length > 0 ? (
-                  <div className="space-y-3">
-                    <p className="text-sm text-gray-600 mb-4">Clique na resposta que você acha que está correta:</p>
-                    {options.map((option, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        className="w-full text-left justify-start text-lg py-6 hover:bg-blue-50 transition-all duration-200 hover:scale-105"
-                        onClick={() => handleAnswer(option)}
-                      >
-                        {option}
-                      </Button>
-                    ))}
+                  <div className="space-y-4">
+                    {/* Campo de Input para Digitação */}
+                    <div className="border-2 border-dashed border-blue-300 p-4 rounded-lg bg-blue-50">
+                      <p className="text-sm text-blue-700 mb-3 font-medium">✍️ Digite sua resposta:</p>
+                      <div className="flex gap-2">
+                        <Input
+                          value={userInput}
+                          onChange={(e) => setUserInput(e.target.value)}
+                          onKeyPress={handleKeyPress}
+                          placeholder="Digite o que você acha que é..."
+                          className="flex-1"
+                          disabled={isProcessing}
+                        />
+                        <Button 
+                          onClick={handleTextSubmit}
+                          disabled={!userInput.trim() || isProcessing}
+                          size="icon"
+                          className="bg-blue-600 hover:bg-blue-700"
+                        >
+                          <Send className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="text-center text-gray-500 text-sm">
+                      - OU -
+                    </div>
+
+                    <div className="space-y-3">
+                      <p className="text-sm text-gray-600">Clique em uma das opções:</p>
+                      {options.map((option, index) => (
+                        <Button
+                          key={index}
+                          variant="outline"
+                          className="w-full text-left justify-start text-lg py-6 hover:bg-blue-50 transition-all duration-200 hover:scale-105"
+                          onClick={() => handleAnswer(option)}
+                          disabled={isProcessing}
+                        >
+                          {option}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <p className="text-center py-8 text-gray-500">
