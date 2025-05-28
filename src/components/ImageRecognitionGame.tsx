@@ -1,9 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { pipeline } from '@huggingface/transformers';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { Brain, Play, RotateCcw, Loader2, Circle, RectangleHorizontal, Triangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -143,6 +144,8 @@ const ImageRecognitionGame = () => {
   };
 
   const handleShapeSelection = (shape: string) => {
+    if (selectedShape !== '') return; // Previne múltiplas seleções
+    
     setSelectedShape(shape);
     
     const isCorrect = shape === correctShape;
@@ -285,6 +288,10 @@ const ImageRecognitionGame = () => {
                     src={currentImage}
                     alt="Imagem para a IA analisar"
                     className="w-full aspect-square object-cover rounded-lg shadow-md"
+                    onError={(e) => {
+                      console.log('Erro ao carregar imagem:', e);
+                      setCurrentImage('');
+                    }}
                   />
                 ) : (
                   <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
@@ -297,7 +304,7 @@ const ImageRecognitionGame = () => {
             {/* Classificação por Formas */}
             <Card className="bg-white shadow-lg">
               <CardHeader>
-                <CardTitle className="text-xl">🔍 Como você classificaria?</CardTitle>
+                <CardTitle className="text-xl">🔍 Escolha a forma geométrica</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {isProcessing ? (
@@ -311,26 +318,29 @@ const ImageRecognitionGame = () => {
                       Escolha a forma geométrica que melhor representa esta imagem:
                     </p>
                     
-                    <div className="grid gap-4">
+                    <RadioGroup 
+                      value={selectedShape} 
+                      onValueChange={handleShapeSelection}
+                      disabled={selectedShape !== ''}
+                      className="space-y-4"
+                    >
                       {shapeCategories.map((category) => (
-                        <Button
-                          key={category.shape}
-                          variant="outline"
-                          className={`h-20 text-left justify-start text-lg transition-all duration-200 hover:scale-105 ${
-                            selectedShape === category.shape 
-                              ? category.color + ' text-white border-transparent' 
-                              : 'hover:bg-gray-50'
-                          }`}
-                          onClick={() => handleShapeSelection(category.shape)}
-                          disabled={isProcessing || selectedShape !== ''}
-                        >
-                          <div className="flex items-center gap-4">
+                        <div key={category.shape} className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50">
+                          <RadioGroupItem 
+                            value={category.shape} 
+                            id={category.shape}
+                            disabled={selectedShape !== ''}
+                          />
+                          <Label 
+                            htmlFor={category.shape} 
+                            className="flex items-center gap-3 cursor-pointer text-lg flex-1"
+                          >
                             {category.icon}
                             <span>{category.name}</span>
-                          </div>
-                        </Button>
+                          </Label>
+                        </div>
                       ))}
-                    </div>
+                    </RadioGroup>
                   </div>
                 ) : (
                   <p className="text-center py-8 text-gray-500">
