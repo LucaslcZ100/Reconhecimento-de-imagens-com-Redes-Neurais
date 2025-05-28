@@ -1,10 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { pipeline } from '@huggingface/transformers';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Brain, Play, RotateCcw, Loader2, CheckCircle, XCircle, Send } from 'lucide-react';
+import { Brain, Play, RotateCcw, Loader2, Circle, RectangleHorizontal, Triangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface GameResult {
@@ -12,18 +12,26 @@ interface GameResult {
   score: number;
 }
 
+interface ShapeCategory {
+  shape: 'circle' | 'rectangle' | 'triangle';
+  name: string;
+  keywords: string[];
+  icon: React.ReactNode;
+  color: string;
+}
+
 const ImageRecognitionGame = () => {
   const [classifier, setClassifier] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentImage, setCurrentImage] = useState<string>('');
   const [predictions, setPredictions] = useState<GameResult[]>([]);
-  const [options, setOptions] = useState<string[]>([]);
   const [score, setScore] = useState(0);
   const [gameRound, setGameRound] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [showExplanation, setShowExplanation] = useState(true);
-  const [userInput, setUserInput] = useState('');
+  const [selectedShape, setSelectedShape] = useState<string>('');
+  const [correctShape, setCorrectShape] = useState<string>('');
   const { toast } = useToast();
 
   // Imagens educacionais com categorias claras
@@ -33,7 +41,35 @@ const ImageRecognitionGame = () => {
     'https://images.unsplash.com/photo-1501286353178-1ec881214838?w=400&h=400&fit=crop', // macaco
     'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=400&fit=crop', // comida
     'https://images.unsplash.com/photo-1472396961693-142e6e269027?w=400&h=400&fit=crop', // cervo
-    'https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=400&h=400&fit=crop' // gato
+    'https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=400&h=400&fit=crop', // gato
+    'https://images.unsplash.com/photo-1494790108755-2616b612b830?w=400&h=400&fit=crop', // pessoa
+    'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=400&fit=crop', // carro
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop', // montanha
+  ];
+
+  // Categorias de formas geométricas baseadas no que a IA identifica
+  const shapeCategories: ShapeCategory[] = [
+    {
+      shape: 'circle',
+      name: 'Círculo - Seres Vivos',
+      keywords: ['cat', 'dog', 'horse', 'animal', 'bird', 'person', 'face', 'monkey', 'tiger', 'elephant'],
+      icon: <Circle className="h-8 w-8" />,
+      color: 'bg-green-500 hover:bg-green-600'
+    },
+    {
+      shape: 'rectangle',
+      name: 'Retângulo - Objetos',
+      keywords: ['car', 'vehicle', 'building', 'house', 'phone', 'computer', 'food', 'plate', 'book', 'table'],
+      icon: <RectangleHorizontal className="h-8 w-8" />,
+      color: 'bg-blue-500 hover:bg-blue-600'
+    },
+    {
+      shape: 'triangle',
+      name: 'Triângulo - Natureza',
+      keywords: ['mountain', 'tree', 'plant', 'flower', 'landscape', 'sky', 'cloud', 'rock', 'stone', 'leaf'],
+      icon: <Triangle className="h-8 w-8" />,
+      color: 'bg-purple-500 hover:bg-purple-600'
+    }
   ];
 
   useEffect(() => {
@@ -60,11 +96,24 @@ const ImageRecognitionGame = () => {
     }
   };
 
+  const determineCorrectShape = (topPrediction: string): string => {
+    const prediction = topPrediction.toLowerCase();
+    
+    for (const category of shapeCategories) {
+      if (category.keywords.some(keyword => prediction.includes(keyword))) {
+        return category.shape;
+      }
+    }
+    
+    // Fallback para círculo se não encontrar correspondência
+    return 'circle';
+  };
+
   const startNewRound = async () => {
     if (!classifier) return;
 
     setIsProcessing(true);
-    setUserInput(''); // Limpar input anterior
+    setSelectedShape('');
     const randomImage = educationalImages[Math.floor(Math.random() * educationalImages.length)];
     setCurrentImage(randomImage);
 
@@ -76,22 +125,10 @@ const ImageRecognitionGame = () => {
       const topPredictions = results.slice(0, 3);
       setPredictions(topPredictions);
 
-      // Criar opções mais simples e educacionais
-      const correctAnswer = topPredictions[0].label;
-      const allOptions = [
-        'gato', 'cachorro', 'cavalo', 'pássaro', 'macaco', 
-        'comida', 'carro', 'árvore', 'pessoa', 'casa'
-      ];
-      
-      const wrongOptions = allOptions
-        .filter(option => !correctAnswer.toLowerCase().includes(option.toLowerCase()))
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 2);
+      // Determinar a forma correta baseada na predição principal
+      const correctShapeForImage = determineCorrectShape(topPredictions[0].label);
+      setCorrectShape(correctShapeForImage);
 
-      const gameOptions = [correctAnswer, ...wrongOptions]
-        .sort(() => Math.random() - 0.5);
-
-      setOptions(gameOptions);
       setGameRound(prev => prev + 1);
       setIsProcessing(false);
     } catch (error) {
@@ -105,57 +142,41 @@ const ImageRecognitionGame = () => {
     }
   };
 
-  const checkAnswer = (answer: string) => {
-    if (predictions.length === 0) return;
-
-    const correctAnswer = predictions[0].label.toLowerCase();
-    const isCorrect = answer.toLowerCase().includes(correctAnswer.split(' ')[0]) || 
-                     correctAnswer.includes(answer.toLowerCase());
+  const handleShapeSelection = (shape: string) => {
+    setSelectedShape(shape);
+    
+    const isCorrect = shape === correctShape;
+    const selectedCategory = shapeCategories.find(cat => cat.shape === shape);
+    const correctCategory = shapeCategories.find(cat => cat.shape === correctShape);
 
     if (isCorrect) {
       setScore(prev => prev + 10);
       toast({
         title: "🎉 Correto!",
-        description: `Parabéns! A IA identificou corretamente: ${predictions[0].label}`,
+        description: `Parabéns! A IA identificou "${predictions[0].label}" que pertence à categoria ${correctCategory?.name}`,
       });
     } else {
       toast({
         title: "📚 Tente novamente!",
-        description: `A IA identificou: ${predictions[0].label}. Continue praticando!`,
+        description: `A IA identificou "${predictions[0].label}" que pertence à categoria ${correctCategory?.name}, não ${selectedCategory?.name}`,
         variant: "destructive"
       });
     }
 
     setTimeout(() => {
       startNewRound();
-    }, 2500);
-  };
-
-  const handleAnswer = (selectedOption: string) => {
-    checkAnswer(selectedOption);
-  };
-
-  const handleTextSubmit = () => {
-    if (userInput.trim()) {
-      checkAnswer(userInput.trim());
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleTextSubmit();
-    }
+    }, 3000);
   };
 
   const resetGame = () => {
     setScore(0);
     setGameRound(0);
     setPredictions([]);
-    setOptions([]);
     setCurrentImage('');
     setGameStarted(false);
     setShowExplanation(true);
-    setUserInput('');
+    setSelectedShape('');
+    setCorrectShape('');
   };
 
   const startGame = () => {
@@ -187,10 +208,10 @@ const ImageRecognitionGame = () => {
         {/* Header Educacional */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            🧠 Jogo Educacional de Reconhecimento de Imagens
+            🧠 Jogo de Classificação por Formas Geométricas
           </h1>
           <p className="text-gray-700 text-lg max-w-2xl mx-auto">
-            Aprenda como as redes neurais reconhecem imagens! A IA vai analisar uma foto e você deve adivinhar o que ela identificou.
+            A IA analisa uma imagem e você deve classificá-la usando formas geométricas!
           </p>
         </div>
 
@@ -200,15 +221,16 @@ const ImageRecognitionGame = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-blue-800">
                 <Brain className="h-6 w-6" />
-                Como Funciona a Inteligência Artificial?
+                Como Funciona o Jogo?
               </CardTitle>
             </CardHeader>
             <CardContent className="text-blue-700">
               <div className="space-y-3">
-                <p>🔍 <strong>Reconhecimento de Imagens:</strong> A IA usa uma rede neural treinada com milhões de imagens</p>
-                <p>🧠 <strong>Aprendizado:</strong> Ela aprendeu a identificar padrões, formas e características</p>
-                <p>📊 <strong>Confiança:</strong> A IA dá uma porcentagem de certeza para cada identificação</p>
-                <p>🎯 <strong>Seu Desafio:</strong> Digite ou clique no que a IA identificou na imagem!</p>
+                <p>🔍 <strong>Análise da IA:</strong> A rede neural identifica o que há na imagem</p>
+                <p>🔵 <strong>Círculo:</strong> Representa seres vivos (pessoas, animais)</p>
+                <p>🔲 <strong>Retângulo:</strong> Representa objetos feitos pelo homem</p>
+                <p>🔺 <strong>Triângulo:</strong> Representa elementos da natureza</p>
+                <p>🎯 <strong>Seu Desafio:</strong> Escolha a forma que melhor representa o que a IA identificou!</p>
               </div>
             </CardContent>
           </Card>
@@ -232,12 +254,12 @@ const ImageRecognitionGame = () => {
             <CardHeader>
               <CardTitle className="flex items-center justify-center gap-2 text-2xl">
                 <Play className="h-8 w-8 text-green-600" />
-                Pronto para Aprender?
+                Pronto para Classificar?
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600 mb-6 text-lg">
-                Vamos descobrir como a inteligência artificial vê o mundo!
+                Vamos classificar imagens usando formas geométricas!
               </p>
               <Button onClick={startGame} size="lg" className="w-full text-lg py-6 bg-green-600 hover:bg-green-700">
                 🚀 Começar o Jogo
@@ -250,7 +272,7 @@ const ImageRecognitionGame = () => {
             {/* Display da Imagem */}
             <Card className="bg-white shadow-lg">
               <CardHeader>
-                <CardTitle className="text-xl">🖼️ Imagem para Análise</CardTitle>
+                <CardTitle className="text-xl">🖼️ Imagem para Classificação</CardTitle>
               </CardHeader>
               <CardContent>
                 {isProcessing ? (
@@ -272,10 +294,10 @@ const ImageRecognitionGame = () => {
               </CardContent>
             </Card>
 
-            {/* Opções de Resposta */}
+            {/* Classificação por Formas */}
             <Card className="bg-white shadow-lg">
               <CardHeader>
-                <CardTitle className="text-xl">🤔 O que a IA identificou?</CardTitle>
+                <CardTitle className="text-xl">🔍 Como você classificaria?</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {isProcessing ? (
@@ -283,46 +305,29 @@ const ImageRecognitionGame = () => {
                     <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-blue-500" />
                     <p className="text-lg">A rede neural está processando...</p>
                   </div>
-                ) : options.length > 0 ? (
+                ) : predictions.length > 0 ? (
                   <div className="space-y-4">
-                    {/* Campo de Input para Digitação */}
-                    <div className="border-2 border-dashed border-blue-300 p-4 rounded-lg bg-blue-50">
-                      <p className="text-sm text-blue-700 mb-3 font-medium">✍️ Digite sua resposta:</p>
-                      <div className="flex gap-2">
-                        <Input
-                          value={userInput}
-                          onChange={(e) => setUserInput(e.target.value)}
-                          onKeyPress={handleKeyPress}
-                          placeholder="Digite o que você acha que é..."
-                          className="flex-1"
-                          disabled={isProcessing}
-                        />
-                        <Button 
-                          onClick={handleTextSubmit}
-                          disabled={!userInput.trim() || isProcessing}
-                          size="icon"
-                          className="bg-blue-600 hover:bg-blue-700"
-                        >
-                          <Send className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="text-center text-gray-500 text-sm">
-                      - OU -
-                    </div>
-
-                    <div className="space-y-3">
-                      <p className="text-sm text-gray-600">Clique em uma das opções:</p>
-                      {options.map((option, index) => (
+                    <p className="text-center text-gray-600 mb-4">
+                      Escolha a forma geométrica que melhor representa esta imagem:
+                    </p>
+                    
+                    <div className="grid gap-4">
+                      {shapeCategories.map((category) => (
                         <Button
-                          key={index}
+                          key={category.shape}
                           variant="outline"
-                          className="w-full text-left justify-start text-lg py-6 hover:bg-blue-50 transition-all duration-200 hover:scale-105"
-                          onClick={() => handleAnswer(option)}
-                          disabled={isProcessing}
+                          className={`h-20 text-left justify-start text-lg transition-all duration-200 hover:scale-105 ${
+                            selectedShape === category.shape 
+                              ? category.color + ' text-white border-transparent' 
+                              : 'hover:bg-gray-50'
+                          }`}
+                          onClick={() => handleShapeSelection(category.shape)}
+                          disabled={isProcessing || selectedShape !== ''}
                         >
-                          {option}
+                          <div className="flex items-center gap-4">
+                            {category.icon}
+                            <span>{category.name}</span>
+                          </div>
                         </Button>
                       ))}
                     </div>
@@ -352,28 +357,29 @@ const ImageRecognitionGame = () => {
         {predictions.length > 0 && gameStarted && (
           <Card className="mt-6 bg-purple-50 border-purple-200">
             <CardHeader>
-              <CardTitle className="text-purple-800">🔬 Como a IA Analisou Esta Imagem</CardTitle>
+              <CardTitle className="text-purple-800">🔬 O que a IA Identificou</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-purple-700 mb-4">
-                A rede neural deu estas pontuações de confiança:
+                A rede neural deu estas classificações:
               </p>
               <div className="space-y-3">
                 {predictions.map((prediction, index) => (
                   <div key={index} className="flex justify-between items-center bg-white p-3 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      {index === 0 ? <CheckCircle className="h-5 w-5 text-green-500" /> : <XCircle className="h-5 w-5 text-gray-400" />}
-                      <span className="font-medium">{prediction.label}</span>
-                    </div>
+                    <span className="font-medium">{prediction.label}</span>
                     <Badge variant={index === 0 ? "default" : "secondary"} className="text-lg">
                       {(prediction.score * 100).toFixed(1)}%
                     </Badge>
                   </div>
                 ))}
               </div>
-              <p className="text-sm text-purple-600 mt-4">
-                💡 A IA sempre escolhe a opção com maior porcentagem de confiança!
-              </p>
+              {correctShape && (
+                <p className="text-sm text-purple-600 mt-4">
+                  💡 Baseado na identificação principal, esta imagem pertence à categoria da forma: {
+                    shapeCategories.find(cat => cat.shape === correctShape)?.name
+                  }
+                </p>
+              )}
             </CardContent>
           </Card>
         )}
