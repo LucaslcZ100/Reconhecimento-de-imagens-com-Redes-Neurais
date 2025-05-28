@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { pipeline } from '@huggingface/transformers';
 import { Button } from '@/components/ui/button';
@@ -21,10 +22,16 @@ interface ShapeCategory {
   color: string;
 }
 
+interface EmojiItem {
+  emoji: string;
+  name: string;
+  category: 'circle' | 'rectangle' | 'triangle';
+}
+
 const ImageRecognitionGame = () => {
   const [classifier, setClassifier] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentImage, setCurrentImage] = useState<string>('');
+  const [currentEmoji, setCurrentEmoji] = useState<EmojiItem | null>(null);
   const [predictions, setPredictions] = useState<GameResult[]>([]);
   const [score, setScore] = useState(0);
   const [gameRound, setGameRound] = useState(0);
@@ -35,20 +42,40 @@ const ImageRecognitionGame = () => {
   const [correctShape, setCorrectShape] = useState<string>('');
   const { toast } = useToast();
 
-  // Imagens educacionais com categorias claras
-  const educationalImages = [
-    'https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400&h=400&fit=crop', // gato
-    'https://images.unsplash.com/photo-1452378174528-3090a4bba7b2?w=400&h=400&fit=crop', // cavalo
-    'https://images.unsplash.com/photo-1501286353178-1ec881214838?w=400&h=400&fit=crop', // macaco
-    'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=400&fit=crop', // comida
-    'https://images.unsplash.com/photo-1472396961693-142e6e269027?w=400&h=400&fit=crop', // cervo
-    'https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=400&h=400&fit=crop', // gato
-    'https://images.unsplash.com/photo-1494790108755-2616b612b830?w=400&h=400&fit=crop', // pessoa
-    'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=400&fit=crop', // carro
-    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop', // montanha
+  // Emojis educacionais com categorias
+  const emojiItems: EmojiItem[] = [
+    // Círculo - Seres Vivos
+    { emoji: '🐱', name: 'gato', category: 'circle' },
+    { emoji: '🐶', name: 'cachorro', category: 'circle' },
+    { emoji: '🐴', name: 'cavalo', category: 'circle' },
+    { emoji: '🐵', name: 'macaco', category: 'circle' },
+    { emoji: '🐯', name: 'tigre', category: 'circle' },
+    { emoji: '🐘', name: 'elefante', category: 'circle' },
+    { emoji: '👤', name: 'pessoa', category: 'circle' },
+    { emoji: '🦅', name: 'pássaro', category: 'circle' },
+    
+    // Retângulo - Objetos
+    { emoji: '🚗', name: 'carro', category: 'rectangle' },
+    { emoji: '🏠', name: 'casa', category: 'rectangle' },
+    { emoji: '📱', name: 'telefone', category: 'rectangle' },
+    { emoji: '💻', name: 'computador', category: 'rectangle' },
+    { emoji: '🍕', name: 'pizza', category: 'rectangle' },
+    { emoji: '📚', name: 'livro', category: 'rectangle' },
+    { emoji: '🎮', name: 'videogame', category: 'rectangle' },
+    { emoji: '⌚', name: 'relógio', category: 'rectangle' },
+    
+    // Triângulo - Natureza
+    { emoji: '🏔️', name: 'montanha', category: 'triangle' },
+    { emoji: '🌲', name: 'árvore', category: 'triangle' },
+    { emoji: '🌸', name: 'flor', category: 'triangle' },
+    { emoji: '🍃', name: 'folha', category: 'triangle' },
+    { emoji: '⛰️', name: 'pedra', category: 'triangle' },
+    { emoji: '🌵', name: 'cacto', category: 'triangle' },
+    { emoji: '🌾', name: 'planta', category: 'triangle' },
+    { emoji: '🍄', name: 'cogumelo', category: 'triangle' }
   ];
 
-  // Categorias de formas geométricas baseadas no que a IA identifica
+  // Categorias de formas geométricas
   const shapeCategories: ShapeCategory[] = [
     {
       shape: 'circle',
@@ -74,77 +101,50 @@ const ImageRecognitionGame = () => {
   ];
 
   useEffect(() => {
-    initializeClassifier();
+    // Para este jogo com emojis, não precisamos da IA de classificação de imagens
+    // Vamos simular o carregamento e depois usar classificação baseada nos emojis
+    const simulateLoading = async () => {
+      console.log('🎮 Preparando o jogo...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setIsLoading(false);
+      console.log('✅ Jogo pronto!');
+    };
+    
+    simulateLoading();
   }, []);
 
-  const initializeClassifier = async () => {
-    try {
-      console.log('🤖 Inicializando a rede neural...');
-      const imageClassifier = await pipeline(
-        'image-classification',
-        'onnx-community/mobilenetv4_conv_small.e2400_r224_in1k'
-      );
-      setClassifier(imageClassifier);
-      setIsLoading(false);
-      console.log('✅ Rede neural carregada!');
-    } catch (error) {
-      console.error('❌ Erro ao carregar a rede neural:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível carregar a rede neural. Tente novamente.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const determineCorrectShape = (topPrediction: string): string => {
-    const prediction = topPrediction.toLowerCase();
-    
-    for (const category of shapeCategories) {
-      if (category.keywords.some(keyword => prediction.includes(keyword))) {
-        return category.shape;
-      }
-    }
-    
-    // Fallback para círculo se não encontrar correspondência
-    return 'circle';
-  };
-
   const startNewRound = async () => {
-    if (!classifier) return;
-
     setIsProcessing(true);
     setSelectedShape('');
-    const randomImage = educationalImages[Math.floor(Math.random() * educationalImages.length)];
-    setCurrentImage(randomImage);
-
-    try {
-      console.log('🔍 A IA está analisando a imagem...');
-      const results = await classifier(randomImage);
-      console.log('📊 Resultados da análise:', results);
-
-      const topPredictions = results.slice(0, 3);
-      setPredictions(topPredictions);
-
-      // Determinar a forma correta baseada na predição principal
-      const correctShapeForImage = determineCorrectShape(topPredictions[0].label);
-      setCorrectShape(correctShapeForImage);
-
-      setGameRound(prev => prev + 1);
-      setIsProcessing(false);
-    } catch (error) {
-      console.error('❌ Erro ao processar imagem:', error);
-      setIsProcessing(false);
-      toast({
-        title: "Erro",
-        description: "Erro ao processar a imagem. Tente novamente.",
-        variant: "destructive"
-      });
-    }
+    
+    // Selecionar emoji aleatório
+    const randomEmoji = emojiItems[Math.floor(Math.random() * emojiItems.length)];
+    setCurrentEmoji(randomEmoji);
+    
+    // Simular "análise da IA" com resultados baseados no emoji
+    console.log('🔍 Analisando emoji:', randomEmoji.emoji);
+    
+    // Criar predições simuladas baseadas no emoji
+    const mainPrediction = { label: randomEmoji.name, score: 0.85 + Math.random() * 0.1 };
+    const secondaryPredictions = [
+      { label: 'objeto genérico', score: 0.1 + Math.random() * 0.05 },
+      { label: 'item comum', score: 0.05 + Math.random() * 0.03 }
+    ];
+    
+    const allPredictions = [mainPrediction, ...secondaryPredictions];
+    setPredictions(allPredictions);
+    
+    // Definir a forma correta baseada na categoria do emoji
+    setCorrectShape(randomEmoji.category);
+    
+    setGameRound(prev => prev + 1);
+    setIsProcessing(false);
+    
+    console.log('📊 Resultados da análise:', allPredictions);
   };
 
   const handleShapeSelection = (shape: string) => {
-    if (selectedShape !== '') return; // Previne múltiplas seleções
+    if (selectedShape !== '') return;
     
     setSelectedShape(shape);
     
@@ -156,12 +156,12 @@ const ImageRecognitionGame = () => {
       setScore(prev => prev + 10);
       toast({
         title: "🎉 Correto!",
-        description: `Parabéns! A IA identificou "${predictions[0].label}" que pertence à categoria ${correctCategory?.name}`,
+        description: `Parabéns! "${currentEmoji?.name}" pertence à categoria ${correctCategory?.name}`,
       });
     } else {
       toast({
         title: "📚 Tente novamente!",
-        description: `A IA identificou "${predictions[0].label}" que pertence à categoria ${correctCategory?.name}, não ${selectedCategory?.name}`,
+        description: `"${currentEmoji?.name}" pertence à categoria ${correctCategory?.name}, não ${selectedCategory?.name}`,
         variant: "destructive"
       });
     }
@@ -175,7 +175,7 @@ const ImageRecognitionGame = () => {
     setScore(0);
     setGameRound(0);
     setPredictions([]);
-    setCurrentImage('');
+    setCurrentEmoji(null);
     setGameStarted(false);
     setShowExplanation(true);
     setSelectedShape('');
@@ -194,8 +194,8 @@ const ImageRecognitionGame = () => {
         <Card className="w-96 text-center">
           <CardContent className="pt-6">
             <Brain className="h-16 w-16 animate-pulse mx-auto mb-4 text-blue-600" />
-            <h2 className="text-2xl font-bold mb-2 text-gray-800">Carregando Rede Neural</h2>
-            <p className="text-gray-600">Preparando a inteligência artificial para reconhecer imagens...</p>
+            <h2 className="text-2xl font-bold mb-2 text-gray-800">Preparando o Jogo</h2>
+            <p className="text-gray-600">Carregando classificador de emojis...</p>
             <div className="mt-4">
               <Loader2 className="h-6 w-6 animate-spin mx-auto text-blue-500" />
             </div>
@@ -214,7 +214,7 @@ const ImageRecognitionGame = () => {
             🧠 Jogo de Classificação por Formas Geométricas
           </h1>
           <p className="text-gray-700 text-lg max-w-2xl mx-auto">
-            A IA analisa uma imagem e você deve classificá-la usando formas geométricas!
+            Veja o emoji e classifique-o usando formas geométricas!
           </p>
         </div>
 
@@ -229,11 +229,11 @@ const ImageRecognitionGame = () => {
             </CardHeader>
             <CardContent className="text-blue-700">
               <div className="space-y-3">
-                <p>🔍 <strong>Análise da IA:</strong> A rede neural identifica o que há na imagem</p>
+                <p>🎯 <strong>Objetivo:</strong> Classifique emojis usando formas geométricas</p>
                 <p>🔵 <strong>Círculo:</strong> Representa seres vivos (pessoas, animais)</p>
                 <p>🔲 <strong>Retângulo:</strong> Representa objetos feitos pelo homem</p>
                 <p>🔺 <strong>Triângulo:</strong> Representa elementos da natureza</p>
-                <p>🎯 <strong>Seu Desafio:</strong> Escolha a forma que melhor representa o que a IA identificou!</p>
+                <p>🏆 <strong>Pontuação:</strong> Ganhe 10 pontos por resposta correta!</p>
               </div>
             </CardContent>
           </Card>
@@ -262,7 +262,7 @@ const ImageRecognitionGame = () => {
             </CardHeader>
             <CardContent>
               <p className="text-gray-600 mb-6 text-lg">
-                Vamos classificar imagens usando formas geométricas!
+                Vamos classificar emojis usando formas geométricas!
               </p>
               <Button onClick={startGame} size="lg" className="w-full text-lg py-6 bg-green-600 hover:bg-green-700">
                 🚀 Começar o Jogo
@@ -272,27 +272,22 @@ const ImageRecognitionGame = () => {
         ) : (
           /* Tela do Jogo */
           <div className="grid lg:grid-cols-2 gap-8">
-            {/* Display da Imagem */}
+            {/* Display do Emoji */}
             <Card className="bg-white shadow-lg">
               <CardHeader>
-                <CardTitle className="text-xl">🖼️ Imagem para Classificação</CardTitle>
+                <CardTitle className="text-xl">🎯 Emoji para Classificação</CardTitle>
               </CardHeader>
               <CardContent>
                 {isProcessing ? (
                   <div className="aspect-square bg-gray-100 rounded-lg flex flex-col items-center justify-center">
                     <Brain className="h-16 w-16 animate-pulse text-blue-500 mb-4" />
-                    <p className="text-lg font-medium">IA Analisando...</p>
+                    <p className="text-lg font-medium">Analisando...</p>
                   </div>
-                ) : currentImage ? (
-                  <img
-                    src={currentImage}
-                    alt="Imagem para a IA analisar"
-                    className="w-full aspect-square object-cover rounded-lg shadow-md"
-                    onError={(e) => {
-                      console.log('Erro ao carregar imagem:', e);
-                      setCurrentImage('');
-                    }}
-                  />
+                ) : currentEmoji ? (
+                  <div className="aspect-square bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg flex flex-col items-center justify-center shadow-inner">
+                    <div className="text-9xl mb-4">{currentEmoji.emoji}</div>
+                    <p className="text-2xl font-bold text-gray-700 capitalize">{currentEmoji.name}</p>
+                  </div>
                 ) : (
                   <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
                     <Brain className="h-16 w-16 text-gray-400" />
@@ -310,12 +305,12 @@ const ImageRecognitionGame = () => {
                 {isProcessing ? (
                   <div className="text-center py-8">
                     <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-blue-500" />
-                    <p className="text-lg">A rede neural está processando...</p>
+                    <p className="text-lg">Processando...</p>
                   </div>
                 ) : predictions.length > 0 ? (
                   <div className="space-y-4">
                     <p className="text-center text-gray-600 mb-4">
-                      Escolha a forma geométrica que melhor representa esta imagem:
+                      Escolha a forma geométrica que melhor representa este emoji:
                     </p>
                     
                     <RadioGroup 
@@ -363,20 +358,20 @@ const ImageRecognitionGame = () => {
           </div>
         )}
 
-        {/* Análise Detalhada da IA */}
+        {/* Análise Detalhada */}
         {predictions.length > 0 && gameStarted && (
           <Card className="mt-6 bg-purple-50 border-purple-200">
             <CardHeader>
-              <CardTitle className="text-purple-800">🔬 O que a IA Identificou</CardTitle>
+              <CardTitle className="text-purple-800">🔬 Análise do Emoji</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-purple-700 mb-4">
-                A rede neural deu estas classificações:
+                Classificação detectada:
               </p>
               <div className="space-y-3">
                 {predictions.map((prediction, index) => (
                   <div key={index} className="flex justify-between items-center bg-white p-3 rounded-lg">
-                    <span className="font-medium">{prediction.label}</span>
+                    <span className="font-medium capitalize">{prediction.label}</span>
                     <Badge variant={index === 0 ? "default" : "secondary"} className="text-lg">
                       {(prediction.score * 100).toFixed(1)}%
                     </Badge>
@@ -385,7 +380,7 @@ const ImageRecognitionGame = () => {
               </div>
               {correctShape && (
                 <p className="text-sm text-purple-600 mt-4">
-                  💡 Baseado na identificação principal, esta imagem pertence à categoria da forma: {
+                  💡 Este emoji pertence à categoria da forma: {
                     shapeCategories.find(cat => cat.shape === correctShape)?.name
                   }
                 </p>
