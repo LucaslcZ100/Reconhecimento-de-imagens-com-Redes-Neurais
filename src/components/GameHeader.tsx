@@ -10,9 +10,6 @@ const GameHeader = () => {
       <p className="text-gray-700 text-lg max-w-3xl mx-auto">
         Descubra como os computadores "veem" e classificam objetos usando inteligência artificial
       </p>
-      <Badge variant="outline" className="mt-2 text-sm">
-        Nível: Médio | Público: Estudantes e Educadores
-      </Badge>
     </div>
   );
 };
