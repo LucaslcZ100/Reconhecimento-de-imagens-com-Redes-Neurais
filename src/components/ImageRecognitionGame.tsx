@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Brain, Eye, Layers, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import GameHeader from './GameHeader';
@@ -9,6 +9,8 @@ import EmojiDisplay from './EmojiDisplay';
 import NeuralProcessing from './NeuralProcessing';
 import ShapeClassification from './ShapeClassification';
 import DetectedFeatures from './DetectedFeatures';
+import ThemeToggle from './ThemeToggle';
+import GameResults from './GameResults';
 
 interface GameResult {
   label: string;
@@ -49,6 +51,11 @@ const ImageRecognitionGame = () => {
   const [correctShape, setCorrectShape] = useState<string>('');
   const [currentStep, setCurrentStep] = useState<'input' | 'analysis' | 'classification'>('input');
   const [networkLayers, setNetworkLayers] = useState<NetworkLayer[]>([]);
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const [gameFinished, setGameFinished] = useState(false);
+  const [startTime, setStartTime] = useState<number>(0);
+  const [timeElapsed, setTimeElapsed] = useState(0);
+  const [showPixelsCaptured, setShowPixelsCaptured] = useState(false);
   const { toast } = useToast();
 
   // Emojis educacionais com características extraídas
@@ -100,66 +107,83 @@ const ImageRecognitionGame = () => {
     }
   ];
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (gameStarted && !gameFinished) {
+      interval = setInterval(() => {
+        setTimeElapsed(Math.floor((Date.now() - startTime) / 1000));
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [gameStarted, gameFinished, startTime]);
+
   const startNewRound = async () => {
     setIsProcessing(true);
     setSelectedShape('');
     setCurrentStep('input');
+    setShowPixelsCaptured(false);
     
     const randomEmoji = emojiItems[Math.floor(Math.random() * emojiItems.length)];
     setCurrentEmoji(randomEmoji);
     
     console.log('🔍 Iniciando análise de rede neural para:', randomEmoji.emoji);
     
+    // Tempo para capturar pixels
     setTimeout(() => {
-      setCurrentStep('analysis');
-      
-      const layers: NetworkLayer[] = [
-        {
-          name: 'Camada de Entrada',
-          description: 'Recebe a imagem e converte em dados numéricos',
-          icon: <Eye className="h-5 w-5" />,
-          features: ['pixels', 'cores', 'brilho', 'contraste']
-        },
-        {
-          name: 'Camadas Convolucionais',
-          description: 'Detecta características básicas como bordas e formas',
-          icon: <Layers className="h-5 w-5" />,
-          features: randomEmoji.features.slice(0, 2)
-        },
-        {
-          name: 'Camadas Intermediárias',
-          description: 'Combina características para formar padrões mais complexos',
-          icon: <Brain className="h-5 w-5" />,
-          features: randomEmoji.features.slice(2)
-        },
-        {
-          name: 'Camada de Saída',
-          description: 'Classifica o objeto com base nos padrões identificados',
-          icon: <Zap className="h-5 w-5" />,
-          features: [randomEmoji.name]
-        }
-      ];
-      
-      setNetworkLayers(layers);
+      setShowPixelsCaptured(true);
       
       setTimeout(() => {
-        setCurrentStep('classification');
+        setCurrentStep('analysis');
         
-        const mainPrediction = { label: randomEmoji.name, score: 0.85 + Math.random() * 0.1 };
-        const secondaryPredictions = [
-          { label: 'objeto similar', score: 0.1 + Math.random() * 0.05 },
-          { label: 'categoria relacionada', score: 0.05 + Math.random() * 0.03 }
+        const layers: NetworkLayer[] = [
+          {
+            name: 'Camada de Entrada',
+            description: 'Recebe a imagem e converte em dados numéricos',
+            icon: <Eye className="h-5 w-5" />,
+            features: ['pixels', 'cores', 'brilho', 'contraste']
+          },
+          {
+            name: 'Camadas Convolucionais',
+            description: 'Detecta características básicas como bordas e formas',
+            icon: <Layers className="h-5 w-5" />,
+            features: randomEmoji.features.slice(0, 2)
+          },
+          {
+            name: 'Camadas Intermediárias',
+            description: 'Combina características para formar padrões mais complexos',
+            icon: <Brain className="h-5 w-5" />,
+            features: randomEmoji.features.slice(2)
+          },
+          {
+            name: 'Camada de Saída',
+            description: 'Classifica o objeto com base nos padrões identificados',
+            icon: <Zap className="h-5 w-5" />,
+            features: [randomEmoji.name]
+          }
         ];
         
-        const allPredictions = [mainPrediction, ...secondaryPredictions];
-        setPredictions(allPredictions);
-        setCorrectShape(randomEmoji.category);
-        setGameRound(prev => prev + 1);
-        setIsProcessing(false);
+        setNetworkLayers(layers);
         
-        console.log('📊 Classificação completa:', allPredictions);
-      }, 2000);
-    }, 1500);
+        // Tempo mais longo para análise (10 segundos)
+        setTimeout(() => {
+          setCurrentStep('classification');
+          
+          const mainPrediction = { label: randomEmoji.name, score: 0.85 + Math.random() * 0.1 };
+          const secondaryPredictions = [
+            { label: 'objeto similar', score: 0.1 + Math.random() * 0.05 },
+            { label: 'categoria relacionada', score: 0.05 + Math.random() * 0.03 }
+          ];
+          
+          const allPredictions = [mainPrediction, ...secondaryPredictions];
+          setPredictions(allPredictions);
+          setCorrectShape(randomEmoji.category);
+          setGameRound(prev => prev + 1);
+          setIsProcessing(false);
+          
+          console.log('📊 Classificação completa:', allPredictions);
+        }, 10000); // 10 segundos para análise
+      }, 2000); // 2 segundos para mostrar pixels capturados
+    }, 3000); // 3 segundos para capturar pixels
   };
 
   const handleShapeSelection = (shape: string) => {
@@ -201,17 +225,55 @@ const ImageRecognitionGame = () => {
     setCorrectShape('');
     setCurrentStep('input');
     setNetworkLayers([]);
+    setGameFinished(false);
+    setTimeElapsed(0);
+    setShowPixelsCaptured(false);
   };
 
   const startGame = () => {
     setGameStarted(true);
     setShowExplanation(false);
+    setStartTime(Date.now());
     startNewRound();
   };
 
+  const finishGame = () => {
+    setGameFinished(true);
+  };
+
+  const toggleTheme = () => {
+    setIsDarkTheme(prev => !prev);
+  };
+
+  if (gameFinished) {
+    return (
+      <div className={`min-h-screen p-4 ${
+        isDarkTheme 
+          ? 'bg-gradient-to-br from-black via-yellow-900 to-orange-900' 
+          : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
+      }`}>
+        <div className="max-w-6xl mx-auto">
+          <ThemeToggle isDarkTheme={isDarkTheme} onToggle={toggleTheme} />
+          <GameResults 
+            score={score}
+            gameRound={gameRound}
+            timeElapsed={timeElapsed}
+            onRestart={resetGame}
+            isDarkTheme={isDarkTheme}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+    <div className={`min-h-screen p-4 ${
+      isDarkTheme 
+        ? 'bg-gradient-to-br from-black via-yellow-900 to-orange-900' 
+        : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
+    }`}>
       <div className="max-w-6xl mx-auto">
+        <ThemeToggle isDarkTheme={isDarkTheme} onToggle={toggleTheme} />
         <GameHeader />
 
         {showExplanation && !gameStarted && <GameExplanation />}
@@ -222,17 +284,24 @@ const ImageRecognitionGame = () => {
           <GameStart onStartGame={startGame} />
         ) : (
           <div className="grid lg:grid-cols-3 gap-6">
-            <EmojiDisplay currentEmoji={currentEmoji} />
+            <EmojiDisplay 
+              currentEmoji={currentEmoji} 
+              isDarkTheme={isDarkTheme}
+              showPixelsCaptured={showPixelsCaptured}
+            />
             <NeuralProcessing 
               currentStep={currentStep}
               networkLayers={networkLayers}
               predictions={predictions}
+              isDarkTheme={isDarkTheme}
             />
             <ShapeClassification 
               currentStep={currentStep}
               selectedShape={selectedShape}
               onShapeSelection={handleShapeSelection}
               onResetGame={resetGame}
+              onFinishGame={finishGame}
+              isDarkTheme={isDarkTheme}
             />
           </div>
         )}

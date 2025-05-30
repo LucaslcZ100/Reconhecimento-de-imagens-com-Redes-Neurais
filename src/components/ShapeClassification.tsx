@@ -20,13 +20,17 @@ interface ShapeClassificationProps {
   selectedShape: string;
   onShapeSelection: (shape: string) => void;
   onResetGame: () => void;
+  onFinishGame: () => void;
+  isDarkTheme: boolean;
 }
 
 const ShapeClassification = ({ 
   currentStep, 
   selectedShape, 
   onShapeSelection, 
-  onResetGame 
+  onResetGame,
+  onFinishGame,
+  isDarkTheme
 }: ShapeClassificationProps) => {
   const [hoveredCategory, setHoveredCategory] = useState<string>('');
 
@@ -58,35 +62,69 @@ const ShapeClassification = ({
   ];
 
   return (
-    <Card className="bg-white shadow-lg border-2 border-green-200 hover:border-green-400 transition-all duration-300">
-      <CardHeader className="bg-gradient-to-r from-green-50 to-teal-50">
-        <CardTitle className="text-xl flex items-center gap-2">
-          <Target className="h-6 w-6 text-green-600" />
+    <Card className={`shadow-lg border-2 transition-all duration-300 ${
+      isDarkTheme 
+        ? 'bg-black border-yellow-400 hover:border-yellow-300 text-yellow-100' 
+        : 'bg-white border-green-200 hover:border-green-400'
+    }`}>
+      <CardHeader className={
+        isDarkTheme 
+          ? 'bg-gradient-to-r from-yellow-900 to-orange-900' 
+          : 'bg-gradient-to-r from-green-50 to-teal-50'
+      }>
+        <CardTitle className={`text-xl flex items-center gap-2 ${
+          isDarkTheme ? 'text-yellow-300' : 'text-green-600'
+        }`}>
+          <Target className="h-6 w-6" />
           🎯 Classificação Final
         </CardTitle>
-        <p className="text-sm text-gray-600">Agora é sua vez de decidir!</p>
+        <p className={`text-sm ${
+          isDarkTheme ? 'text-yellow-200' : 'text-gray-600'
+        }`}>
+          Agora é sua vez de decidir!
+        </p>
       </CardHeader>
       <CardContent className="p-6">
         {currentStep !== 'classification' ? (
           <div className="text-center py-8">
             <div className="relative">
-              <Brain className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <Brain className={`h-12 w-12 mx-auto mb-4 ${
+                isDarkTheme ? 'text-yellow-400' : 'text-gray-400'
+              }`} />
               <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center">
                 <span className="text-xs">⏳</span>
               </div>
             </div>
-            <p className="text-gray-500 mb-2">Aguardando processamento...</p>
-            <p className="text-xs text-gray-400">Espere a IA terminar de pensar</p>
+            <p className={`mb-2 ${
+              isDarkTheme ? 'text-yellow-300' : 'text-gray-500'
+            }`}>
+              Aguardando processamento...
+            </p>
+            <p className={`text-xs ${
+              isDarkTheme ? 'text-yellow-400' : 'text-gray-400'
+            }`}>
+              Espere a IA terminar de pensar
+            </p>
           </div>
         ) : (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <div className="bg-gradient-to-r from-green-100 to-teal-100 p-4 rounded-lg border border-green-200 mb-4">
-                <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                <p className="font-medium text-green-800 mb-1">
+              <div className={`p-4 rounded-lg border mb-4 ${
+                isDarkTheme 
+                  ? 'bg-gradient-to-r from-yellow-900 to-orange-900 border-yellow-600' 
+                  : 'bg-gradient-to-r from-green-100 to-teal-100 border-green-200'
+              }`}>
+                <Users className={`h-8 w-8 mx-auto mb-2 ${
+                  isDarkTheme ? 'text-yellow-300' : 'text-green-600'
+                }`} />
+                <p className={`font-medium mb-1 ${
+                  isDarkTheme ? 'text-yellow-200' : 'text-green-800'
+                }`}>
                   🤝 Trabalho em Equipe!
                 </p>
-                <p className="text-sm text-green-700">
+                <p className={`text-sm ${
+                  isDarkTheme ? 'text-yellow-300' : 'text-green-700'
+                }`}>
                   A IA fez sua análise, agora você decide qual categoria faz mais sentido
                 </p>
               </div>
@@ -109,16 +147,26 @@ const ShapeClassification = ({
                 >
                   <div className={`flex items-center space-x-4 p-4 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
                     selectedShape === category.shape 
-                      ? 'border-green-400 bg-green-50 shadow-lg' 
+                      ? (isDarkTheme 
+                          ? 'border-yellow-400 bg-yellow-900 shadow-lg' 
+                          : 'border-green-400 bg-green-50 shadow-lg') 
                       : hoveredCategory === category.shape
-                        ? 'border-gray-300 bg-gray-50 shadow-md'
-                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                        ? (isDarkTheme 
+                            ? 'border-yellow-500 bg-yellow-800 shadow-md' 
+                            : 'border-gray-300 bg-gray-50 shadow-md')
+                        : (isDarkTheme 
+                            ? 'border-yellow-600 hover:border-yellow-500 hover:bg-yellow-800' 
+                            : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50')
                   }`}>
                     <RadioGroupItem 
                       value={category.shape} 
                       id={category.shape}
                       disabled={selectedShape !== ''}
-                      className="data-[state=checked]:border-green-500 data-[state=checked]:text-green-500"
+                      className={`${
+                        isDarkTheme 
+                          ? 'data-[state=checked]:border-yellow-400 data-[state=checked]:text-yellow-400' 
+                          : 'data-[state=checked]:border-green-500 data-[state=checked]:text-green-500'
+                      }`}
                     />
                     
                     <div className={`p-3 rounded-full bg-gradient-to-r ${category.color} text-white shadow-md transition-transform duration-300 ${
@@ -133,10 +181,16 @@ const ShapeClassification = ({
                     >
                       <div>
                         <p className="font-medium text-lg mb-1">{category.name}</p>
-                        <p className="text-sm text-gray-600 mb-2">{category.description}</p>
+                        <p className={`text-sm mb-2 ${
+                          isDarkTheme ? 'text-yellow-300' : 'text-gray-600'
+                        }`}>
+                          {category.description}
+                        </p>
                         <div className="flex flex-wrap gap-1">
                           {category.examples.map((example, i) => (
-                            <span key={i} className="text-xs bg-gray-100 px-2 py-1 rounded-full">
+                            <span key={i} className={`text-xs px-2 py-1 rounded-full ${
+                              isDarkTheme ? 'bg-yellow-800 text-yellow-200' : 'bg-gray-100'
+                            }`}>
                               {example}
                             </span>
                           ))}
@@ -145,7 +199,9 @@ const ShapeClassification = ({
                     </Label>
                     
                     {selectedShape === category.shape && (
-                      <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1">
+                      <div className={`absolute -top-2 -right-2 rounded-full p-1 ${
+                        isDarkTheme ? 'bg-yellow-500 text-black' : 'bg-green-500 text-white'
+                      }`}>
                         <Zap className="h-4 w-4" />
                       </div>
                     )}
@@ -155,8 +211,14 @@ const ShapeClassification = ({
             </RadioGroup>
 
             {selectedShape !== '' && (
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200 mt-4">
-                <p className="text-sm text-blue-800">
+              <div className={`p-4 rounded-lg border mt-4 ${
+                isDarkTheme 
+                  ? 'bg-gradient-to-r from-yellow-900 to-orange-900 border-yellow-600' 
+                  : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
+              }`}>
+                <p className={`text-sm ${
+                  isDarkTheme ? 'text-yellow-200' : 'text-blue-800'
+                }`}>
                   <span className="font-medium">🎓 Aprendizado:</span> Assim como vocês trabalham em equipe na sala de aula, 
                   humanos e IA podem colaborar para tomar decisões melhores!
                 </p>
@@ -165,14 +227,30 @@ const ShapeClassification = ({
           </div>
         )}
 
-        <div className="pt-6 border-t mt-6">
+        <div className="pt-6 border-t mt-6 space-y-3">
           <Button
             variant="outline"
             onClick={onResetGame}
-            className="w-full hover:bg-gray-50 transition-colors duration-200"
+            className={`w-full transition-colors duration-200 ${
+              isDarkTheme 
+                ? 'bg-yellow-800 border-yellow-600 text-yellow-200 hover:bg-yellow-700' 
+                : 'hover:bg-gray-50'
+            }`}
           >
             <RotateCcw className="h-4 w-4 mr-2" />
             🔄 Nova Simulação
+          </Button>
+          
+          <Button
+            onClick={onFinishGame}
+            className={`w-full transition-colors duration-200 ${
+              isDarkTheme 
+                ? 'bg-yellow-500 hover:bg-yellow-400 text-black' 
+                : 'bg-red-600 hover:bg-red-700 text-white'
+            }`}
+          >
+            <Target className="h-4 w-4 mr-2" />
+            🏁 Finalizar Simulação
           </Button>
         </div>
       </CardContent>
