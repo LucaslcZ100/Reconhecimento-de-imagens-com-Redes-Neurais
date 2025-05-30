@@ -9,7 +9,6 @@ import EmojiDisplay from './EmojiDisplay';
 import NeuralProcessing from './NeuralProcessing';
 import ShapeClassification from './ShapeClassification';
 import DetectedFeatures from './DetectedFeatures';
-import ThemeToggle from './ThemeToggle';
 import GameResults from './GameResults';
 import InteractiveHero from './InteractiveHero';
 import ProjectIntroduction from './ProjectIntroduction';
@@ -53,7 +52,6 @@ const ImageRecognitionGame = () => {
   const [correctShape, setCorrectShape] = useState<string>('');
   const [currentStep, setCurrentStep] = useState<'input' | 'analysis' | 'classification'>('input');
   const [networkLayers, setNetworkLayers] = useState<NetworkLayer[]>([]);
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
   const [gameFinished, setGameFinished] = useState(false);
   const [startTime, setStartTime] = useState<number>(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
@@ -254,63 +252,28 @@ const ImageRecognitionGame = () => {
     setGameFinished(true);
   };
 
-  const toggleTheme = () => {
-    setIsDarkTheme(prev => !prev);
-  };
-
   if (showHero) {
-    return (
-      <div>
-        <ThemeToggle isDarkTheme={isDarkTheme} onToggle={toggleTheme} />
-        <InteractiveHero 
-          onStartIntroduction={startIntroduction}
-          isDarkTheme={isDarkTheme}
-        />
-      </div>
-    );
+    return <InteractiveHero onStartIntroduction={startIntroduction} />;
   }
 
   if (showIntroduction) {
-    return (
-      <div>
-        <ThemeToggle isDarkTheme={isDarkTheme} onToggle={toggleTheme} />
-        <ProjectIntroduction 
-          onStartGame={startGame}
-          isDarkTheme={isDarkTheme}
-        />
-      </div>
-    );
+    return <ProjectIntroduction onStartGame={startGame} />;
   }
 
   if (gameFinished) {
     return (
-      <div className={`min-h-screen p-4 ${
-        isDarkTheme 
-          ? 'bg-gradient-to-br from-black via-yellow-900 to-orange-900' 
-          : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
-      }`}>
-        <div className="max-w-6xl mx-auto">
-          <ThemeToggle isDarkTheme={isDarkTheme} onToggle={toggleTheme} />
-          <GameResults 
-            score={score}
-            gameRound={gameRound}
-            timeElapsed={timeElapsed}
-            onRestart={resetGame}
-            isDarkTheme={isDarkTheme}
-          />
-        </div>
-      </div>
+      <GameResults 
+        score={score}
+        gameRound={gameRound}
+        timeElapsed={timeElapsed}
+        onRestart={resetGame}
+      />
     );
   }
 
   return (
-    <div className={`min-h-screen p-4 ${
-      isDarkTheme 
-        ? 'bg-gradient-to-br from-black via-yellow-900 to-orange-900' 
-        : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
-    }`}>
+    <div className="min-h-screen p-4 bg-gradient-to-br from-black via-yellow-900 to-orange-900">
       <div className="max-w-6xl mx-auto">
-        <ThemeToggle isDarkTheme={isDarkTheme} onToggle={toggleTheme} />
         <GameHeader />
 
         {showExplanation && !gameStarted && <GameExplanation />}
@@ -323,14 +286,12 @@ const ImageRecognitionGame = () => {
           <div className="grid lg:grid-cols-3 gap-6">
             <EmojiDisplay 
               currentEmoji={currentEmoji} 
-              isDarkTheme={isDarkTheme}
               showPixelsCaptured={showPixelsCaptured}
             />
             <NeuralProcessing 
               currentStep={currentStep}
               networkLayers={networkLayers}
               predictions={predictions}
-              isDarkTheme={isDarkTheme}
             />
             <ShapeClassification 
               currentStep={currentStep}
@@ -338,7 +299,6 @@ const ImageRecognitionGame = () => {
               onShapeSelection={handleShapeSelection}
               onResetGame={resetGame}
               onFinishGame={finishGame}
-              isDarkTheme={isDarkTheme}
             />
           </div>
         )}
