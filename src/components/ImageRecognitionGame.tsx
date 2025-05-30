@@ -11,6 +11,8 @@ import ShapeClassification from './ShapeClassification';
 import DetectedFeatures from './DetectedFeatures';
 import ThemeToggle from './ThemeToggle';
 import GameResults from './GameResults';
+import InteractiveHero from './InteractiveHero';
+import ProjectIntroduction from './ProjectIntroduction';
 
 interface GameResult {
   label: string;
@@ -56,6 +58,8 @@ const ImageRecognitionGame = () => {
   const [startTime, setStartTime] = useState<number>(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [showPixelsCaptured, setShowPixelsCaptured] = useState(false);
+  const [showHero, setShowHero] = useState(true);
+  const [showIntroduction, setShowIntroduction] = useState(false);
   const { toast } = useToast();
 
   // Emojis educacionais com características extraídas
@@ -228,9 +232,18 @@ const ImageRecognitionGame = () => {
     setGameFinished(false);
     setTimeElapsed(0);
     setShowPixelsCaptured(false);
+    setShowHero(true);
+    setShowIntroduction(false);
+  };
+
+  const startIntroduction = () => {
+    setShowHero(false);
+    setShowIntroduction(true);
   };
 
   const startGame = () => {
+    setShowHero(false);
+    setShowIntroduction(false);
     setGameStarted(true);
     setShowExplanation(false);
     setStartTime(Date.now());
@@ -244,6 +257,30 @@ const ImageRecognitionGame = () => {
   const toggleTheme = () => {
     setIsDarkTheme(prev => !prev);
   };
+
+  if (showHero) {
+    return (
+      <div>
+        <ThemeToggle isDarkTheme={isDarkTheme} onToggle={toggleTheme} />
+        <InteractiveHero 
+          onStartIntroduction={startIntroduction}
+          isDarkTheme={isDarkTheme}
+        />
+      </div>
+    );
+  }
+
+  if (showIntroduction) {
+    return (
+      <div>
+        <ThemeToggle isDarkTheme={isDarkTheme} onToggle={toggleTheme} />
+        <ProjectIntroduction 
+          onStartGame={startGame}
+          isDarkTheme={isDarkTheme}
+        />
+      </div>
+    );
+  }
 
   if (gameFinished) {
     return (
