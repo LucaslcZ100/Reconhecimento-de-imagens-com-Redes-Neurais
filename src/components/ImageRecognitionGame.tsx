@@ -287,11 +287,13 @@ const ImageRecognitionGame = () => {
             <EmojiDisplay 
               currentEmoji={currentEmoji} 
               showPixelsCaptured={showPixelsCaptured}
+              isDarkTheme={true}
             />
             <NeuralProcessing 
               currentStep={currentStep}
               networkLayers={networkLayers}
               predictions={predictions}
+              isDarkTheme={true}
             />
             <ShapeClassification 
               currentStep={currentStep}
@@ -299,6 +301,7 @@ const ImageRecognitionGame = () => {
               onShapeSelection={handleShapeSelection}
               onResetGame={resetGame}
               onFinishGame={finishGame}
+              isDarkTheme={true}
             />
           </div>
         )}
