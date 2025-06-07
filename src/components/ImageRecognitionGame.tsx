@@ -65,9 +65,9 @@ const ImageRecognitionGame = () => {
   const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
   const { toast } = useToast();
 
-  // Imagens reais organizadas por categoria geométrica - CORRIGIDAS
+  // Imagens organizadas por categoria geométrica - CORRIGIDAS conforme definições
   const emojiItems: EmojiItem[] = [
-    // Círculo - APENAS Seres Vivos (organismos com vida)
+    // 🔵 Círculo - APENAS Seres Vivos (organismos com vida)
     { 
       emoji: '🐱', 
       name: 'gato', 
@@ -83,228 +83,228 @@ const ImageRecognitionGame = () => {
       imageUrl: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🌸', 
-      name: 'flor', 
+      emoji: '🐋', 
+      name: 'baleia', 
       category: 'circle', 
-      features: ['pétalas circulares', 'centro redondo', 'cores vibrantes', 'forma orgânica'],
-      imageUrl: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=400&h=400&fit=crop'
+      features: ['corpo aerodinâmico', 'nadadeiras', 'respiração', 'mamífero aquático'],
+      imageUrl: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🍎', 
-      name: 'fruta vermelha', 
+      emoji: '🐴', 
+      name: 'cavalo', 
       category: 'circle', 
-      features: ['cor vermelha', 'formato arredondado', 'textura lisa', 'orgânico'],
-      imageUrl: 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=400&fit=crop'
+      features: ['crina fluindo', 'músculos definidos', 'pernas elegantes', 'mamífero terrestre'],
+      imageUrl: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400&h=400&fit=crop'
     },
     { 
       emoji: '🐄', 
-      name: 'animal pastando', 
+      name: 'vaca', 
       category: 'circle', 
-      features: ['corpo robusto', 'cabeça grande', 'manchas naturais', 'pernas fortes'],
+      features: ['corpo robusto', 'cabeça grande', 'manchas naturais', 'mamífero pastoreio'],
       imageUrl: 'https://images.unsplash.com/photo-1493962853295-0fd70327578a?w=400&h=400&fit=crop'
     },
     { 
       emoji: '🦌', 
       name: 'veado', 
       category: 'circle', 
-      features: ['corpo esbelto', 'chifres ramificados', 'pelagem marrom', 'olhos grandes'],
+      features: ['corpo esbelto', 'chifres ramificados', 'pelagem marrom', 'mamífero selvagem'],
       imageUrl: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?w=400&h=400&fit=crop'
     },
     { 
       emoji: '🐻', 
-      name: 'animal selvagem', 
+      name: 'urso', 
       category: 'circle', 
-      features: ['pelagem densa', 'corpo robusto', 'orelhas arredondadas', 'focinho proeminente'],
+      features: ['pelagem densa', 'corpo robusto', 'orelhas arredondadas', 'carnívoro'],
       imageUrl: 'https://images.unsplash.com/photo-1465379944081-7f47de8d74ac?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🌳', 
-      name: 'árvore', 
-      category: 'circle', 
-      features: ['tronco vertical', 'galhos ramificados', 'folhas verdes', 'organismo vivo'],
-      imageUrl: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?w=400&h=400&fit=crop'
-    },
-    { 
       emoji: '🐒', 
-      name: 'primata', 
+      name: 'macaco', 
       category: 'circle', 
-      features: ['postura dinâmica', 'membros alongados', 'comportamento ágil', 'mamífero'],
+      features: ['postura dinâmica', 'membros alongados', 'comportamento ágil', 'primata'],
       imageUrl: 'https://images.unsplash.com/photo-1501286353178-1ec881214838?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🦏', 
-      name: 'rinoceronte', 
+      emoji: '🐕', 
+      name: 'cachorro', 
       category: 'circle', 
-      features: ['silhueta imponente', 'chifre proeminente', 'pele rugosa', 'mamífero herbívoro'],
-      imageUrl: 'https://images.unsplash.com/photo-1485833077593-4278bba3f11f?w=400&h=400&fit=crop'
+      features: ['focinho úmido', 'orelhas expressivas', 'cauda balançando', 'companheiro leal'],
+      imageUrl: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=400&fit=crop'
+    },
+    { 
+      emoji: '🦅', 
+      name: 'pássaro', 
+      category: 'circle', 
+      features: ['penas coloridas', 'bico afiado', 'asas poderosas', 'ave predadora'],
+      imageUrl: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?w=400&h=400&fit=crop'
     },
 
-    // Retângulo - Objetos Manufaturados com formas geométricas regulares
+    // 🔲 Retângulo - Objetos Manufaturados (criações humanas)
     { 
       emoji: '💻', 
       name: 'computador', 
       category: 'rectangle', 
-      features: ['tela retangular', 'bordas definidas', 'teclado linear', 'design moderno'],
+      features: ['tela retangular', 'bordas definidas', 'teclado linear', 'tecnologia digital'],
       imageUrl: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '📱', 
+      emoji: '💻', 
       name: 'laptop', 
       category: 'rectangle', 
-      features: ['formato retangular', 'tela plana', 'bordas retas', 'material metálico'],
+      features: ['formato dobrável', 'tela plana', 'bordas retas', 'portabilidade'],
       imageUrl: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=400&fit=crop'
     },
     { 
       emoji: '🖥️', 
       name: 'monitor', 
       category: 'rectangle', 
-      features: ['tela grande', 'suporte central', 'formato retangular', 'tecnologia digital'],
+      features: ['tela grande', 'suporte central', 'formato retangular', 'display digital'],
       imageUrl: 'https://images.unsplash.com/photo-1483058712412-4245e9b90334?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '💼', 
-      name: 'mesa de trabalho', 
-      category: 'rectangle', 
-      features: ['superfície plana', 'bordas retas', 'material uniforme', 'design funcional'],
-      imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=400&fit=crop'
     },
     { 
       emoji: '🏢', 
       name: 'edifício', 
       category: 'rectangle', 
-      features: ['estrutura vertical', 'janelas alinhadas', 'fachada geométrica', 'arquitetura moderna'],
+      features: ['estrutura vertical', 'janelas alinhadas', 'fachada geométrica', 'arquitetura urbana'],
       imageUrl: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🏛️', 
-      name: 'prédio branco', 
+      emoji: '🚗', 
+      name: 'carro', 
       category: 'rectangle', 
-      features: ['paredes lisas', 'estrutura simétrica', 'linhas retas', 'design minimalista'],
-      imageUrl: 'https://images.unsplash.com/photo-1524230572899-a752b3835840?w=400&h=400&fit=crop'
+      features: ['carroceria metálica', 'rodas circulares', 'faróis', 'veículo motorizado'],
+      imageUrl: 'https://images.unsplash.com/photo-1494905998402-395d579af36f?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🏗️', 
-      name: 'arranha-céu', 
+      emoji: '📱', 
+      name: 'smartphone', 
       category: 'rectangle', 
-      features: ['altura imponente', 'fachada repetitiva', 'geometria vertical', 'estrutura urbana'],
-      imageUrl: 'https://images.unsplash.com/photo-1433832597046-4f10e10ac764?w=400&h=400&fit=crop'
+      features: ['tela touchscreen', 'bordas arredondadas', 'interface digital', 'tecnologia móvel'],
+      imageUrl: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🌃', 
-      name: 'construção urbana', 
+      emoji: '🔧', 
+      name: 'ferramenta', 
       category: 'rectangle', 
-      features: ['ângulos retos', 'superfícies planas', 'simetria arquitetônica', 'design contemporâneo'],
-      imageUrl: 'https://images.unsplash.com/photo-1449157291145-7efd050a4d0e?w=400&h=400&fit=crop'
+      features: ['metal resistente', 'cabo ergonômico', 'função específica', 'instrumento manual'],
+      imageUrl: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🏬', 
-      name: 'fachada moderna', 
+      emoji: '🍴', 
+      name: 'talher', 
       category: 'rectangle', 
-      features: ['linhas horizontais', 'padrão repetitivo', 'estrutura geométrica', 'arquitetura clean'],
-      imageUrl: 'https://images.unsplash.com/photo-1459767129954-1b1c1f9b9ace?w=400&h=400&fit=crop'
+      features: ['material metálico', 'design funcional', 'utensílio culinário', 'acabamento polido'],
+      imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🏭', 
-      name: 'complexo arquitetônico', 
+      emoji: '🎒', 
+      name: 'mochila', 
       category: 'rectangle', 
-      features: ['volumes retangulares', 'composição modular', 'formas angulares', 'design industrial'],
-      imageUrl: 'https://images.unsplash.com/photo-1460574283810-2aab119d8511?w=400&h=400&fit=crop'
+      features: ['tecido resistente', 'zíperes', 'alças ajustáveis', 'compartimentos'],
+      imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop'
+    },
+    { 
+      emoji: '🪑', 
+      name: 'cadeira', 
+      category: 'rectangle', 
+      features: ['estrutura rígida', 'assento acolchoado', 'encosto ergonômico', 'móvel funcional'],
+      imageUrl: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop'
     },
 
-    // Triângulo - Elementos Naturais NÃO VIVOS (paisagens, fenômenos, objetos astronômicos)
+    // 🔺 Triângulo - Elementos Naturais (não vivos)
     { 
       emoji: '🏔️', 
       name: 'montanha', 
       category: 'triangle', 
-      features: ['pico pontiagudo', 'encosta íngreme', 'formação rochosa', 'altitude elevada'],
+      features: ['pico pontiagudo', 'encosta íngreme', 'formação rochosa', 'elevação natural'],
       imageUrl: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '⛰️', 
-      name: 'paisagem montanhosa', 
-      category: 'triangle', 
-      features: ['várias elevações', 'terreno acidentado', 'formação natural', 'vista panorâmica'],
-      imageUrl: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🌲', 
-      name: 'floresta densa', 
-      category: 'triangle', 
-      features: ['vegetação densa', 'relevo irregular', 'tons de verde', 'paisagem natural'],
-      imageUrl: 'https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🏞️', 
-      name: 'formação rochosa', 
-      category: 'triangle', 
-      features: ['picos rochosos', 'erosão natural', 'texturas irregulares', 'paisagem dramática'],
-      imageUrl: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400&h=400&fit=crop'
     },
     { 
       emoji: '🌕', 
       name: 'lua', 
       category: 'triangle', 
-      features: ['forma circular', 'crateras', 'brilho uniforme', 'objeto celeste'],
+      features: ['forma circular', 'crateras visíveis', 'brilho noturno', 'satélite natural'],
       imageUrl: 'https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=400&h=400&fit=crop'
     },
     { 
       emoji: '🌊', 
-      name: 'onda do mar', 
+      name: 'ondas do mar', 
       category: 'triangle', 
-      features: ['movimento fluido', 'curvas naturais', 'espuma branca', 'fenômeno natural'],
+      features: ['movimento fluido', 'espuma branca', 'força natural', 'fenômeno aquático'],
       imageUrl: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🔵', 
-      name: 'bolha de água', 
+      emoji: '🫧', 
+      name: 'bolhas', 
       category: 'triangle', 
-      features: ['transparência', 'reflexos', 'forma esférica', 'fenômeno físico'],
+      features: ['transparência', 'reflexos iridescentes', 'forma esférica', 'fenômeno físico'],
       imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🦌', 
-      name: 'paisagem natural', 
+      emoji: '🌋', 
+      name: 'vulcão', 
       category: 'triangle', 
-      features: ['ambiente selvagem', 'elementos naturais', 'paisagem rural', 'cenário natural'],
-      imageUrl: 'https://images.unsplash.com/photo-1439886183900-e79ec0057170?w=400&h=400&fit=crop'
+      features: ['cone irregular', 'atividade geológica', 'formação rochosa', 'fenômeno terrestre'],
+      imageUrl: 'https://images.unsplash.com/photo-1577094593080-9ef1dfb13dce?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🐮', 
-      name: 'campo pastoral', 
+      emoji: '🏜️', 
+      name: 'deserto', 
       category: 'triangle', 
-      features: ['ambiente pastoril', 'paisagem campestre', 'natureza rural', 'cenário bucólico'],
-      imageUrl: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=400&h=400&fit=crop'
+      features: ['dunas de areia', 'paisagem árida', 'extensão vasta', 'ambiente seco'],
+      imageUrl: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🦓', 
-      name: 'savana africana', 
+      emoji: '🌌', 
+      name: 'galáxia', 
       category: 'triangle', 
-      features: ['paisagem selvagem', 'ambiente natural', 'ecossistema', 'habitat natural'],
-      imageUrl: 'https://images.unsplash.com/photo-1485833077593-4278bba3f11f?w=400&h=400&fit=crop'
+      features: ['estrelas distantes', 'nebulosas coloridas', 'espaço profundo', 'formação cósmica'],
+      imageUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400&h=400&fit=crop'
+    },
+    { 
+      emoji: '🌊', 
+      name: 'oceano', 
+      category: 'triangle', 
+      features: ['água salgada', 'horizonte infinito', 'cor azul profunda', 'massa aquática'],
+      imageUrl: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=400&h=400&fit=crop'
+    },
+    { 
+      emoji: '🏝️', 
+      name: 'praia', 
+      category: 'triangle', 
+      features: ['areia dourada', 'encontro terra-mar', 'paisagem costeira', 'ambiente natural'],
+      imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=400&fit=crop'
+    },
+    { 
+      emoji: '☁️', 
+      name: 'céu', 
+      category: 'triangle', 
+      features: ['nuvens flutuantes', 'tons azulados', 'atmosfera terrestre', 'fenômeno meteorológico'],
+      imageUrl: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400&h=400&fit=crop'
     }
   ];
 
-  // Categorias de formas geométricas expandidas
+  // Categorias de formas geométricas atualizadas
   const shapeCategories: ShapeCategory[] = [
     {
       shape: 'circle',
       name: 'Círculo - Seres Vivos',
-      description: 'Representa organismos vivos com características orgânicas e curvas naturais',
-      keywords: ['olhos', 'orelhas', 'focinho', 'rosto', 'pelo', 'pele'],
+      description: 'Organismos que apresentam vida: pessoas, animais e plantas',
+      keywords: ['vida', 'respiração', 'movimento', 'crescimento', 'reprodução'],
       color: 'bg-green-500 hover:bg-green-600'
     },
     {
       shape: 'rectangle',
       name: 'Retângulo - Objetos Manufaturados',
-      description: 'Representa objetos criados pelo homem com formas regulares e geométricas',
-      keywords: ['bordas', 'tela', 'janelas', 'porta', 'metal', 'plástico'],
+      description: 'Criações humanas: computadores, edifícios, carros e outros artifícios',
+      keywords: ['artificial', 'manufaturado', 'tecnologia', 'ferramenta', 'construção'],
       color: 'bg-blue-500 hover:bg-blue-600'
     },
     {
       shape: 'triangle',
       name: 'Triângulo - Elementos Naturais',
-      description: 'Representa elementos da natureza com formas irregulares e orgânicas',
-      keywords: ['pico', 'tronco', 'galhos', 'pétalas', 'pedras', 'natural'],
+      description: 'Componentes da natureza não vivos: montanhas, oceanos, fenômenos',
+      keywords: ['natural', 'geológico', 'atmosférico', 'paisagem', 'fenômeno'],
       color: 'bg-purple-500 hover:bg-purple-600'
     }
   ];
