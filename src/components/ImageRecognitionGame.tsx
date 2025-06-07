@@ -12,6 +12,7 @@ import DetectedFeatures from './DetectedFeatures';
 import GameResults from './GameResults';
 import InteractiveHero from './InteractiveHero';
 import ProjectIntroduction from './ProjectIntroduction';
+import AnalysisCompletedDialog from './AnalysisCompletedDialog';
 
 interface GameResult {
   label: string;
@@ -59,6 +60,7 @@ const ImageRecognitionGame = () => {
   const [showPixelsCaptured, setShowPixelsCaptured] = useState(false);
   const [showHero, setShowHero] = useState(true);
   const [showIntroduction, setShowIntroduction] = useState(false);
+  const [showAnalysisDialog, setShowAnalysisDialog] = useState(false);
   const { toast } = useToast();
 
   // Imagens reais organizadas por categoria geométrica
@@ -407,9 +409,20 @@ const ImageRecognitionGame = () => {
       });
     }
 
+    // Mostrar modal após 3 segundos
     setTimeout(() => {
-      startNewRound();
-    }, 4000);
+      setShowAnalysisDialog(true);
+    }, 3000);
+  };
+
+  const handleNewAnalysis = () => {
+    setShowAnalysisDialog(false);
+    startNewRound();
+  };
+
+  const handleEndSimulation = () => {
+    setShowAnalysisDialog(false);
+    finishGame();
   };
 
   const resetGame = () => {
@@ -509,6 +522,14 @@ const ImageRecognitionGame = () => {
             currentStep={currentStep}
           />
         )}
+
+        <AnalysisCompletedDialog
+          isOpen={showAnalysisDialog}
+          onNewAnalysis={handleNewAnalysis}
+          onEndSimulation={handleEndSimulation}
+          currentScore={score}
+          currentRound={gameRound}
+        />
       </div>
     </div>
   );
