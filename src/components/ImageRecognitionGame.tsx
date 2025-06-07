@@ -61,11 +61,13 @@ const ImageRecognitionGame = () => {
   const [showHero, setShowHero] = useState(true);
   const [showIntroduction, setShowIntroduction] = useState(false);
   const [showAnalysisDialog, setShowAnalysisDialog] = useState(false);
+  const [showAnalysisResult, setShowAnalysisResult] = useState(false);
+  const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
   const { toast } = useToast();
 
-  // Imagens reais organizadas por categoria geométrica
+  // Imagens reais organizadas por categoria geométrica - CORRIGIDAS
   const emojiItems: EmojiItem[] = [
-    // Círculo - Seres Vivos e objetos com formas orgânicas/circulares
+    // Círculo - APENAS Seres Vivos (organismos com vida)
     { 
       emoji: '🐱', 
       name: 'gato', 
@@ -86,27 +88,6 @@ const ImageRecognitionGame = () => {
       category: 'circle', 
       features: ['pétalas circulares', 'centro redondo', 'cores vibrantes', 'forma orgânica'],
       imageUrl: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🌕', 
-      name: 'lua', 
-      category: 'circle', 
-      features: ['forma circular', 'crateras', 'brilho uniforme', 'objeto celeste'],
-      imageUrl: 'https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🌊', 
-      name: 'onda do mar', 
-      category: 'circle', 
-      features: ['movimento fluido', 'curvas naturais', 'espuma branca', 'água azul'],
-      imageUrl: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🔵', 
-      name: 'bolha de água', 
-      category: 'circle', 
-      features: ['transparência', 'reflexos', 'forma esférica', 'superfície lisa'],
-      imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&h=400&fit=crop'
     },
     { 
       emoji: '🍎', 
@@ -136,8 +117,29 @@ const ImageRecognitionGame = () => {
       features: ['pelagem densa', 'corpo robusto', 'orelhas arredondadas', 'focinho proeminente'],
       imageUrl: 'https://images.unsplash.com/photo-1465379944081-7f47de8d74ac?w=400&h=400&fit=crop'
     },
+    { 
+      emoji: '🌳', 
+      name: 'árvore', 
+      category: 'circle', 
+      features: ['tronco vertical', 'galhos ramificados', 'folhas verdes', 'organismo vivo'],
+      imageUrl: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?w=400&h=400&fit=crop'
+    },
+    { 
+      emoji: '🐒', 
+      name: 'primata', 
+      category: 'circle', 
+      features: ['postura dinâmica', 'membros alongados', 'comportamento ágil', 'mamífero'],
+      imageUrl: 'https://images.unsplash.com/photo-1501286353178-1ec881214838?w=400&h=400&fit=crop'
+    },
+    { 
+      emoji: '🦏', 
+      name: 'rinoceronte', 
+      category: 'circle', 
+      features: ['silhueta imponente', 'chifre proeminente', 'pele rugosa', 'mamífero herbívoro'],
+      imageUrl: 'https://images.unsplash.com/photo-1485833077593-4278bba3f11f?w=400&h=400&fit=crop'
+    },
 
-    // Retângulo - Objetos manufaturados com formas geométricas regulares
+    // Retângulo - Objetos Manufaturados com formas geométricas regulares
     { 
       emoji: '💻', 
       name: 'computador', 
@@ -209,7 +211,7 @@ const ImageRecognitionGame = () => {
       imageUrl: 'https://images.unsplash.com/photo-1460574283810-2aab119d8511?w=400&h=400&fit=crop'
     },
 
-    // Triângulo - Elementos naturais com formas irregulares e pontiagudas
+    // Triângulo - Elementos Naturais NÃO VIVOS (paisagens, fenômenos, objetos astronômicos)
     { 
       emoji: '🏔️', 
       name: 'montanha', 
@@ -226,9 +228,9 @@ const ImageRecognitionGame = () => {
     },
     { 
       emoji: '🌲', 
-      name: 'área verde montanhosa', 
+      name: 'floresta densa', 
       category: 'triangle', 
-      features: ['vegetação densa', 'relevo irregular', 'tons de verde', 'natureza selvagem'],
+      features: ['vegetação densa', 'relevo irregular', 'tons de verde', 'paisagem natural'],
       imageUrl: 'https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?w=400&h=400&fit=crop'
     },
     { 
@@ -239,45 +241,45 @@ const ImageRecognitionGame = () => {
       imageUrl: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🌳', 
-      name: 'floresta', 
+      emoji: '🌕', 
+      name: 'lua', 
       category: 'triangle', 
-      features: ['copas triangulares', 'troncos verticais', 'densidade vegetal', 'luz filtrada'],
-      imageUrl: 'https://images.unsplash.com/photo-1500673922987-e212871fec22?w=400&h=400&fit=crop'
+      features: ['forma circular', 'crateras', 'brilho uniforme', 'objeto celeste'],
+      imageUrl: 'https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🐒', 
-      name: 'primata', 
+      emoji: '🌊', 
+      name: 'onda do mar', 
       category: 'triangle', 
-      features: ['postura dinâmica', 'membros alongados', 'comportamento ágil', 'habitat natural'],
-      imageUrl: 'https://images.unsplash.com/photo-1501286353178-1ec881214838?w=400&h=400&fit=crop'
+      features: ['movimento fluido', 'curvas naturais', 'espuma branca', 'fenômeno natural'],
+      imageUrl: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=400&h=400&fit=crop'
+    },
+    { 
+      emoji: '🔵', 
+      name: 'bolha de água', 
+      category: 'triangle', 
+      features: ['transparência', 'reflexos', 'forma esférica', 'fenômeno físico'],
+      imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&h=400&fit=crop'
     },
     { 
       emoji: '🦌', 
-      name: 'cervos na natureza', 
+      name: 'paisagem natural', 
       category: 'triangle', 
-      features: ['galhadas ramificadas', 'postura alerta', 'ambiente florestal', 'movimento natural'],
+      features: ['ambiente selvagem', 'elementos naturais', 'paisagem rural', 'cenário natural'],
       imageUrl: 'https://images.unsplash.com/photo-1439886183900-e79ec0057170?w=400&h=400&fit=crop'
     },
     { 
       emoji: '🐮', 
-      name: 'gado no campo', 
+      name: 'campo pastoral', 
       category: 'triangle', 
-      features: ['ambiente pastoril', 'postura de pastejo', 'paisagem rural', 'vida no campo'],
+      features: ['ambiente pastoril', 'paisagem campestre', 'natureza rural', 'cenário bucólico'],
       imageUrl: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=400&h=400&fit=crop'
     },
     { 
-      emoji: '🦏', 
-      name: 'animal de grande porte', 
-      category: 'triangle', 
-      features: ['silhueta imponente', 'chifre proeminente', 'pele rugosa', 'força natural'],
-      imageUrl: 'https://images.unsplash.com/photo-1485833077593-4278bba3f11f?w=400&h=400&fit=crop'
-    },
-    { 
       emoji: '🦓', 
-      name: 'animal selvagem listrado', 
+      name: 'savana africana', 
       category: 'triangle', 
-      features: ['padrão de listras', 'postura elegante', 'características únicas', 'vida selvagem'],
+      features: ['paisagem selvagem', 'ambiente natural', 'ecossistema', 'habitat natural'],
       imageUrl: 'https://images.unsplash.com/photo-1485833077593-4278bba3f11f?w=400&h=400&fit=crop'
     }
   ];
@@ -392,6 +394,9 @@ const ImageRecognitionGame = () => {
     setSelectedShape(shape);
     
     const isCorrect = shape === correctShape;
+    setIsCorrectAnswer(isCorrect);
+    setShowAnalysisResult(true);
+    
     const selectedCategory = shapeCategories.find(cat => cat.shape === shape);
     const correctCategory = shapeCategories.find(cat => cat.shape === correctShape);
 
@@ -412,6 +417,7 @@ const ImageRecognitionGame = () => {
     // Mostrar modal após 3 segundos
     setTimeout(() => {
       setShowAnalysisDialog(true);
+      setShowAnalysisResult(false);
     }, 3000);
   };
 
@@ -512,6 +518,30 @@ const ImageRecognitionGame = () => {
               onFinishGame={finishGame}
               isDarkTheme={true}
             />
+          </div>
+        )}
+
+        {/* Resultado da Análise - Barra colorida no topo */}
+        {showAnalysisResult && selectedShape && (
+          <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg border-2 transition-all duration-500 ${
+            isCorrectAnswer 
+              ? 'bg-green-100 border-green-500 text-green-800' 
+              : 'bg-red-100 border-red-500 text-red-800'
+          }`}>
+            <div className="flex items-center gap-2">
+              <span className="text-lg">
+                {isCorrectAnswer ? '✅' : '❌'}
+              </span>
+              <span className="font-semibold">
+                {isCorrectAnswer ? 'Correto!' : 'Incorreto!'}
+              </span>
+              <span className="text-sm">
+                {isCorrectAnswer 
+                  ? `A IA classificou "${currentEmoji?.name}" corretamente.`
+                  : `A resposta correta era ${shapeCategories.find(cat => cat.shape === correctShape)?.name}.`
+                }
+              </span>
+            </div>
           </div>
         )}
 
