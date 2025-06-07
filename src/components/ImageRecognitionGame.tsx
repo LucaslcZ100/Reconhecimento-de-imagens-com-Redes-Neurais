@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Brain, Eye, Layers, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -63,6 +64,7 @@ const ImageRecognitionGame = () => {
   const [showAnalysisDialog, setShowAnalysisDialog] = useState(false);
   const [showAnalysisResult, setShowAnalysisResult] = useState(false);
   const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
+  const [usedEmojiIndexes, setUsedEmojiIndexes] = useState<number[]>([]);
   const { toast } = useToast();
 
   // Imagens organizadas por categoria geométrica - CORRIGIDAS conforme definições
@@ -319,13 +321,30 @@ const ImageRecognitionGame = () => {
     return () => clearInterval(interval);
   }, [gameStarted, gameFinished, startTime]);
 
+  const getRandomUnusedEmoji = () => {
+    const availableIndexes = emojiItems
+      .map((_, index) => index)
+      .filter(index => !usedEmojiIndexes.includes(index));
+    
+    if (availableIndexes.length === 0) {
+      // Se todas as imagens foram usadas, reinicia a lista
+      setUsedEmojiIndexes([]);
+      return emojiItems[Math.floor(Math.random() * emojiItems.length)];
+    }
+    
+    const randomIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+    setUsedEmojiIndexes(prev => [...prev, randomIndex]);
+    return emojiItems[randomIndex];
+  };
+
   const startNewRound = async () => {
     setIsProcessing(true);
     setSelectedShape('');
     setCurrentStep('input');
     setShowPixelsCaptured(false);
+    setShowAnalysisResult(false);
     
-    const randomEmoji = emojiItems[Math.floor(Math.random() * emojiItems.length)];
+    const randomEmoji = getRandomUnusedEmoji();
     setCurrentEmoji(randomEmoji);
     
     console.log('🔍 Iniciando análise de rede neural para:', randomEmoji.name);
@@ -389,7 +408,7 @@ const ImageRecognitionGame = () => {
   };
 
   const handleShapeSelection = (shape: string) => {
-    if (selectedShape !== '') return;
+    if (selectedShape !== '' || !currentEmoji) return;
     
     setSelectedShape(shape);
     
@@ -428,7 +447,7 @@ const ImageRecognitionGame = () => {
 
   const handleEndSimulation = () => {
     setShowAnalysisDialog(false);
-    finishGame();
+    setGameFinished(true);
   };
 
   const resetGame = () => {
@@ -447,6 +466,9 @@ const ImageRecognitionGame = () => {
     setShowPixelsCaptured(false);
     setShowHero(true);
     setShowIntroduction(false);
+    setUsedEmojiIndexes([]);
+    setShowAnalysisResult(false);
+    setShowAnalysisDialog(false);
   };
 
   const startIntroduction = () => {
@@ -521,26 +543,28 @@ const ImageRecognitionGame = () => {
           </div>
         )}
 
-        {/* Resultado da Análise - Barra colorida no topo */}
+        {/* Resultado da Análise - Barra colorida mais vibrante no topo */}
         {showAnalysisResult && selectedShape && (
-          <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg border-2 transition-all duration-500 ${
+          <div className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-8 py-4 rounded-xl shadow-2xl border-4 transition-all duration-700 animate-bounce ${
             isCorrectAnswer 
-              ? 'bg-green-100 border-green-500 text-green-800' 
-              : 'bg-red-100 border-red-500 text-red-800'
+              ? 'bg-gradient-to-r from-green-400 to-green-600 border-green-300 text-white shadow-green-500/50' 
+              : 'bg-gradient-to-r from-red-500 to-red-700 border-red-400 text-white shadow-red-500/50'
           }`}>
-            <div className="flex items-center gap-2">
-              <span className="text-lg">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl animate-pulse">
                 {isCorrectAnswer ? '✅' : '❌'}
               </span>
-              <span className="font-semibold">
-                {isCorrectAnswer ? 'Correto!' : 'Incorreto!'}
-              </span>
-              <span className="text-sm">
-                {isCorrectAnswer 
-                  ? `A IA classificou "${currentEmoji?.name}" corretamente.`
-                  : `A resposta correta era ${shapeCategories.find(cat => cat.shape === correctShape)?.name}.`
-                }
-              </span>
+              <div className="flex flex-col">
+                <span className="font-bold text-lg">
+                  {isCorrectAnswer ? '🎉 CORRETO!' : '❌ INCORRETO!'}
+                </span>
+                <span className="text-sm opacity-90">
+                  {isCorrectAnswer 
+                    ? `A IA classificou "${currentEmoji?.name}" corretamente!`
+                    : `A resposta correta era ${shapeCategories.find(cat => cat.shape === correctShape)?.name}.`
+                  }
+                </span>
+              </div>
             </div>
           </div>
         )}
