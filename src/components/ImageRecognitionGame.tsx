@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Brain, Eye, Layers, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -67,7 +66,7 @@ const ImageRecognitionGame = () => {
   const [usedEmojiIndexes, setUsedEmojiIndexes] = useState<number[]>([]);
   const { toast } = useToast();
 
-  // Imagens organizadas por categoria geométrica - CORRIGIDAS conforme definições
+  // Imagens organizadas por categoria geométrica - IMAGEM DO VEADO ATUALIZADA
   const emojiItems: EmojiItem[] = [
     // 🔵 Círculo - APENAS Seres Vivos (organismos com vida)
     { 
@@ -110,7 +109,7 @@ const ImageRecognitionGame = () => {
       name: 'veado', 
       category: 'circle', 
       features: ['corpo esbelto', 'chifres ramificados', 'pelagem marrom', 'mamífero selvagem'],
-      imageUrl: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?w=400&h=400&fit=crop'
+      imageUrl: 'https://images.unsplash.com/photo-1485833077593-4278bba3f11f?w=400&h=400&fit=crop'
     },
     { 
       emoji: '🐻', 
@@ -347,7 +346,7 @@ const ImageRecognitionGame = () => {
     const randomEmoji = getRandomUnusedEmoji();
     setCurrentEmoji(randomEmoji);
     
-    console.log('🔍 Iniciando análise de rede neural para:', randomEmoji.name);
+    console.log('🔍 Iniciando análise de rede neural avançada para:', randomEmoji.name);
     
     // Tempo para capturar pixels
     setTimeout(() => {
@@ -356,43 +355,80 @@ const ImageRecognitionGame = () => {
       setTimeout(() => {
         setCurrentStep('analysis');
         
+        // REDE NEURAL MAIS COMPLEXA - 10 camadas ao invés de 4
         const layers: NetworkLayer[] = [
           {
-            name: 'Camada de Entrada',
-            description: 'Recebe a imagem e converte em dados numéricos',
+            name: 'Camada de Entrada (Input Layer)',
+            description: 'Recebe e preprocessa 160.000 pixels RGB da imagem',
             icon: <Eye className="h-5 w-5" />,
-            features: ['pixels', 'cores', 'brilho', 'contraste']
+            features: ['normalização RGB', 'detecção de ruído', 'calibração de contraste']
           },
           {
-            name: 'Camadas Convolucionais',
-            description: 'Detecta características básicas como bordas e formas',
+            name: 'Conv1 - Detecção Primitiva',
+            description: 'Filtros 3x3 para bordas e pontos básicos (32 filtros)',
+            icon: <Layers className="h-5 w-5" />,
+            features: ['bordas horizontais', 'bordas verticais', 'pontos de interesse']
+          },
+          {
+            name: 'Conv2 - Formas Básicas',
+            description: 'Filtros 5x5 para formas geométricas simples (64 filtros)',
+            icon: <Layers className="h-5 w-5" />,
+            features: ['círculos', 'linhas retas', 'curvas']
+          },
+          {
+            name: 'MaxPooling + Normalização',
+            description: 'Redução dimensional e normalização batch (dropout 0.2)',
+            icon: <Brain className="h-5 w-5" />,
+            features: ['redução 2x2', 'estabilização', 'prevenção overfitting']
+          },
+          {
+            name: 'Conv3 - Texturas',
+            description: 'Filtros 7x7 para texturas e padrões (128 filtros)',
+            icon: <Layers className="h-5 w-5" />,
+            features: ['texturas de pele', 'padrões de superfície', 'gradientes']
+          },
+          {
+            name: 'Conv4 - Partes de Objetos',
+            description: 'Detecta componentes específicos (256 filtros)',
             icon: <Layers className="h-5 w-5" />,
             features: randomEmoji.features.slice(0, 2)
           },
           {
-            name: 'Camadas Intermediárias',
-            description: 'Combina características para formar padrões mais complexos',
+            name: 'Attention Layer - Foco Inteligente',
+            description: 'Mecanismo de atenção espacial e de canal',
             icon: <Brain className="h-5 w-5" />,
+            features: ['foco seletivo', 'pesos adaptativos', 'relevância espacial']
+          },
+          {
+            name: 'Conv5 - Características Avançadas',
+            description: 'Combinação de características complexas (512 filtros)',
+            icon: <Layers className="h-5 w-5" />,
             features: randomEmoji.features.slice(2)
           },
           {
-            name: 'Camada de Saída',
-            description: 'Classifica o objeto com base nos padrões identificados',
+            name: 'Dense Layers - Raciocínio',
+            description: 'Camadas densas para tomada de decisão (1024→512→256)',
+            icon: <Brain className="h-5 w-5" />,
+            features: ['correlação global', 'raciocínio contextual', 'memória de padrões']
+          },
+          {
+            name: 'Output - Classificação Final',
+            description: 'Softmax com 3 neurônios de saída + confiança',
             icon: <Zap className="h-5 w-5" />,
-            features: [randomEmoji.name]
+            features: ['probabilidades finais', 'confiança da rede', randomEmoji.name]
           }
         ];
         
         setNetworkLayers(layers);
         
-        // Tempo mais longo para análise (10 segundos)
+        // Tempo mais longo para análise complexa (15 segundos)
         setTimeout(() => {
           setCurrentStep('classification');
           
-          const mainPrediction = { label: randomEmoji.name, score: 0.85 + Math.random() * 0.1 };
+          const mainPrediction = { label: randomEmoji.name, score: 0.89 + Math.random() * 0.08 };
           const secondaryPredictions = [
-            { label: 'objeto similar', score: 0.1 + Math.random() * 0.05 },
-            { label: 'categoria relacionada', score: 0.05 + Math.random() * 0.03 }
+            { label: 'categoria similar', score: 0.07 + Math.random() * 0.03 },
+            { label: 'alternativa possível', score: 0.02 + Math.random() * 0.02 }
           ];
           
           const allPredictions = [mainPrediction, ...secondaryPredictions];
@@ -401,10 +437,10 @@ const ImageRecognitionGame = () => {
           setGameRound(prev => prev + 1);
           setIsProcessing(false);
           
-          console.log('📊 Classificação completa:', allPredictions);
-        }, 10000); // 10 segundos para análise
-      }, 2000); // 2 segundos para mostrar pixels capturados
-    }, 3000); // 3 segundos para capturar pixels
+          console.log('📊 Classificação de rede neural complexa completa:', allPredictions);
+        }, 15000); // 15 segundos para análise mais complexa
+      }, 2000);
+    }, 3000);
   };
 
   const handleShapeSelection = (shape: string) => {
@@ -509,7 +545,7 @@ const ImageRecognitionGame = () => {
   }
 
   return (
-    <div className="min-h-screen p-4 bg-gradient-to-br from-black via-yellow-900 to-orange-900">
+    <div className="min-h-screen p-4 bg-gradient-to-br from-black via-yellow-900 to-orange-900 font-neural">
       <div className="max-w-6xl mx-auto">
         <GameHeader />
 
@@ -543,25 +579,25 @@ const ImageRecognitionGame = () => {
           </div>
         )}
 
-        {/* Resultado da Análise - Barra colorida mais vibrante no topo */}
+        {/* Resultado da Análise - Barra colorida mais vibrante e interativa no topo */}
         {showAnalysisResult && selectedShape && (
-          <div className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-8 py-4 rounded-xl shadow-2xl border-4 transition-all duration-700 animate-bounce ${
+          <div className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-8 py-4 rounded-xl shadow-2xl border-4 transition-all duration-700 animate-bounce neural-interactive ${
             isCorrectAnswer 
-              ? 'bg-gradient-to-r from-green-400 to-green-600 border-green-300 text-white shadow-green-500/50' 
-              : 'bg-gradient-to-r from-red-500 to-red-700 border-red-400 text-white shadow-red-500/50'
+              ? 'bg-gradient-to-r from-green-400 via-green-500 to-green-600 border-green-300 text-white shadow-green-500/60 hover:shadow-green-400/80' 
+              : 'bg-gradient-to-r from-red-500 via-red-600 to-red-700 border-red-400 text-white shadow-red-500/60 hover:shadow-red-400/80'
           }`}>
             <div className="flex items-center gap-3">
-              <span className="text-2xl animate-pulse">
-                {isCorrectAnswer ? '✅' : '❌'}
+              <span className="text-3xl animate-pulse">
+                {isCorrectAnswer ? '🎉' : '❌'}
               </span>
               <div className="flex flex-col">
-                <span className="font-bold text-lg">
-                  {isCorrectAnswer ? '🎉 CORRETO!' : '❌ INCORRETO!'}
+                <span className="font-bold text-xl neural-text-bright">
+                  {isCorrectAnswer ? '🎯 EXCELENTE!' : '🤔 QUASE LÁ!'}
                 </span>
-                <span className="text-sm opacity-90">
+                <span className="text-sm opacity-90 font-medium">
                   {isCorrectAnswer 
-                    ? `A IA classificou "${currentEmoji?.name}" corretamente!`
-                    : `A resposta correta era ${shapeCategories.find(cat => cat.shape === correctShape)?.name}.`
+                    ? `Rede neural classificou "${currentEmoji?.name}" perfeitamente!`
+                    : `A classificação correta era ${shapeCategories.find(cat => cat.shape === correctShape)?.name}.`
                   }
                 </span>
               </div>

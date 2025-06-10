@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -18,6 +19,11 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'neural': ['Inter', 'system-ui', 'sans-serif'],
+				'neural-mono': ['JetBrains Mono', 'monospace'],
+				'neural-display': ['Inter', 'system-ui', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -61,6 +67,14 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				neural: {
+					primary: 'hsl(var(--neural-primary))',
+					secondary: 'hsl(var(--neural-secondary))',
+					accent: 'hsl(var(--neural-accent))',
+					'text-primary': 'hsl(var(--neural-text-primary))',
+					'text-secondary': 'hsl(var(--neural-text-secondary))',
+					'text-contrast': 'hsl(var(--neural-text-contrast))',
 				}
 			},
 			borderRadius: {
@@ -84,11 +98,31 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'neural-pulse': {
+					'0%, 100%': {
+						opacity: '1',
+						transform: 'scale(1)'
+					},
+					'50%': {
+						opacity: '0.8',
+						transform: 'scale(1.05)'
+					}
+				},
+				'neural-glow': {
+					'0%, 100%': {
+						boxShadow: '0 0 20px rgba(255, 193, 7, 0.3)'
+					},
+					'50%': {
+						boxShadow: '0 0 40px rgba(255, 193, 7, 0.6)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'neural-pulse': 'neural-pulse 2s ease-in-out infinite',
+				'neural-glow': 'neural-glow 3s ease-in-out infinite'
 			}
 		}
 	},
