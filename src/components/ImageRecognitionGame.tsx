@@ -355,80 +355,92 @@ const ImageRecognitionGame = () => {
       setTimeout(() => {
         setCurrentStep('analysis');
         
-        // REDE NEURAL MAIS COMPLEXA - 10 camadas ao invés de 4
+        // REDE NEURAL ULTRA COMPLEXA - 12 camadas com milhares de neurônios
         const layers: NetworkLayer[] = [
           {
             name: 'Camada de Entrada (Input Layer)',
-            description: 'Recebe e preprocessa 160.000 pixels RGB da imagem',
+            description: 'Recebe e preprocessa 480.000 pixels RGB da imagem (1024 neurônios)',
             icon: <Eye className="h-5 w-5" />,
-            features: ['normalização RGB', 'detecção de ruído', 'calibração de contraste']
+            features: ['normalização RGB', 'detecção de ruído', 'calibração de contraste', '1024 neurônios']
           },
           {
             name: 'Conv1 - Detecção Primitiva',
-            description: 'Filtros 3x3 para bordas e pontos básicos (32 filtros)',
+            description: 'Filtros 3x3 para bordas e pontos básicos (2048 neurônios, 64 filtros)',
             icon: <Layers className="h-5 w-5" />,
-            features: ['bordas horizontais', 'bordas verticais', 'pontos de interesse']
+            features: ['bordas horizontais', 'bordas verticais', 'pontos de interesse', '2048 neurônios']
           },
           {
             name: 'Conv2 - Formas Básicas',
-            description: 'Filtros 5x5 para formas geométricas simples (64 filtros)',
+            description: 'Filtros 5x5 para formas geométricas simples (4096 neurônios, 128 filtros)',
             icon: <Layers className="h-5 w-5" />,
-            features: ['círculos', 'linhas retas', 'curvas']
+            features: ['círculos', 'linhas retas', 'curvas', '4096 neurônios']
           },
           {
-            name: 'MaxPooling + Normalização',
-            description: 'Redução dimensional e normalização batch (dropout 0.2)',
+            name: 'MaxPooling + Normalização Batch',
+            description: 'Redução dimensional e normalização (2048 neurônios ativos)',
             icon: <Brain className="h-5 w-5" />,
-            features: ['redução 2x2', 'estabilização', 'prevenção overfitting']
+            features: ['redução 2x2', 'estabilização', 'prevenção overfitting', '2048 neurônios']
           },
           {
-            name: 'Conv3 - Texturas',
-            description: 'Filtros 7x7 para texturas e padrões (128 filtros)',
+            name: 'Conv3 - Texturas Avançadas',
+            description: 'Filtros 7x7 para texturas e padrões complexos (8192 neurônios, 256 filtros)',
             icon: <Layers className="h-5 w-5" />,
-            features: ['texturas de pele', 'padrões de superfície', 'gradientes']
+            features: ['texturas de pele', 'padrões de superfície', 'gradientes', '8192 neurônios']
           },
           {
             name: 'Conv4 - Partes de Objetos',
-            description: 'Detecta componentes específicos (256 filtros)',
+            description: 'Detecta componentes específicos de objetos (16384 neurônios, 512 filtros)',
             icon: <Layers className="h-5 w-5" />,
-            features: randomEmoji.features.slice(0, 2)
+            features: [...randomEmoji.features.slice(0, 2), '16384 neurônios']
           },
           {
             name: 'Attention Layer - Foco Inteligente',
-            description: 'Mecanismo de atenção espacial e de canal',
+            description: 'Mecanismo de atenção multi-cabeça (32768 neurônios)',
             icon: <Brain className="h-5 w-5" />,
-            features: ['foco seletivo', 'pesos adaptativos', 'relevância espacial']
+            features: ['foco seletivo', 'pesos adaptativos', 'relevância espacial', '32768 neurônios']
           },
           {
-            name: 'Conv5 - Características Avançadas',
-            description: 'Combinação de características complexas (512 filtros)',
+            name: 'Conv5 - Características Ultra-Complexas',
+            description: 'Combinação de características de alto nível (65536 neurônios, 1024 filtros)',
             icon: <Layers className="h-5 w-5" />,
-            features: randomEmoji.features.slice(2)
+            features: [...randomEmoji.features.slice(2), '65536 neurônios']
           },
           {
-            name: 'Dense Layers - Raciocínio',
-            description: 'Camadas densas para tomada de decisão (1024→512→256)',
+            name: 'Transformer Block - Contextualização',
+            description: 'Módulo transformer para compreensão contextual (131072 neurônios)',
             icon: <Brain className="h-5 w-5" />,
-            features: ['correlação global', 'raciocínio contextual', 'memória de padrões']
+            features: ['auto-atenção', 'codificação posicional', 'contexto global', '131072 neurônios']
           },
           {
-            name: 'Output - Classificação Final',
-            description: 'Softmax com 3 neurônios de saída + confiança',
+            name: 'Dense Layers - Raciocínio Profundo',
+            description: 'Camadas densas para tomada de decisão (262144→131072→65536 neurônios)',
+            icon: <Brain className="h-5 w-5" />,
+            features: ['correlação global', 'raciocínio contextual', 'memória de padrões', '262144 neurônios']
+          },
+          {
+            name: 'Ensemble Layer - Combinação de Modelos',
+            description: 'Combina múltiples redes especializadas (32768 neurônios)',
             icon: <Zap className="h-5 w-5" />,
-            features: ['probabilidades finais', 'confiança da rede', randomEmoji.name]
+            features: ['fusão de modelos', 'votação ponderada', 'robustez aumentada', '32768 neurônios']
+          },
+          {
+            name: 'Output - Classificação Final Ultra-Precisa',
+            description: 'Softmax com confiança calibrada (1024 neurônios de saída)',
+            icon: <Zap className="h-5 w-5" />,
+            features: ['probabilidades calibradas', 'confiança da rede', randomEmoji.name, '1024 neurônios']
           }
         ];
         
         setNetworkLayers(layers);
         
-        // Tempo mais longo para análise complexa (15 segundos)
+        // Tempo mais longo para análise ultra-complexa (18 segundos)
         setTimeout(() => {
           setCurrentStep('classification');
           
-          const mainPrediction = { label: randomEmoji.name, score: 0.89 + Math.random() * 0.08 };
+          const mainPrediction = { label: randomEmoji.name, score: 0.91 + Math.random() * 0.07 };
           const secondaryPredictions = [
-            { label: 'categoria similar', score: 0.07 + Math.random() * 0.03 },
-            { label: 'alternativa possível', score: 0.02 + Math.random() * 0.02 }
+            { label: 'categoria similar', score: 0.06 + Math.random() * 0.02 },
+            { label: 'alternativa possível', score: 0.01 + Math.random() * 0.02 }
           ];
           
           const allPredictions = [mainPrediction, ...secondaryPredictions];
@@ -437,8 +449,8 @@ const ImageRecognitionGame = () => {
           setGameRound(prev => prev + 1);
           setIsProcessing(false);
           
-          console.log('📊 Classificação de rede neural complexa completa:', allPredictions);
-        }, 15000); // 15 segundos para análise mais complexa
+          console.log('📊 Classificação de rede neural ultra-complexa completa:', allPredictions);
+        }, 18000); // 18 segundos para análise ultra-complexa
       }, 2000);
     }, 3000);
   };
