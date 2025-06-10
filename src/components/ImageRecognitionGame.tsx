@@ -66,7 +66,7 @@ const ImageRecognitionGame = () => {
   const [usedEmojiIndexes, setUsedEmojiIndexes] = useState<number[]>([]);
   const { toast } = useToast();
 
-  // Imagens organizadas por categoria geométrica - IMAGEM DO VEADO ATUALIZADA
+  // Imagens organizadas por categoria geométrica - BANCO ORIGINAL RESTAURADO
   const emojiItems: EmojiItem[] = [
     // 🔵 Círculo - APENAS Seres Vivos (organismos com vida)
     { 
