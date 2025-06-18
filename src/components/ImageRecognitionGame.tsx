@@ -1,522 +1,88 @@
-import React, { useState, useEffect } from 'react';
-import { Brain, Eye, Layers, Zap } from 'lucide-react';
+
+import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import GameHeader from './GameHeader';
-import GameExplanation from './GameExplanation';
-import GameScore from './GameScore';
-import GameStart from './GameStart';
-import EmojiDisplay from './EmojiDisplay';
-import NeuralProcessing from './NeuralProcessing';
-import ShapeClassification from './ShapeClassification';
-import DetectedFeatures from './DetectedFeatures';
-import GameResults from './GameResults';
+import ImageUploadZone from './ImageUploadZone';
+import UserClassification from './UserClassification';
+import UserVerdict from './UserVerdict';
 import InteractiveHero from './InteractiveHero';
 import ProjectIntroduction from './ProjectIntroduction';
-import AnalysisCompletedDialog from './AnalysisCompletedDialog';
-
-interface GameResult {
-  label: string;
-  score: number;
-}
-
-interface EmojiItem {
-  emoji: string;
-  name: string;
-  category: 'circle' | 'rectangle' | 'triangle';
-  features: string[];
-  imageUrl: string;
-}
-
-interface NetworkLayer {
-  name: string;
-  description: string;
-  icon: React.ReactNode;
-  features: string[];
-}
-
-interface ShapeCategory {
-  shape: 'circle' | 'rectangle' | 'triangle';
-  name: string;
-  description: string;
-  keywords: string[];
-  color: string;
-}
 
 const ImageRecognitionGame = () => {
-  const [currentEmoji, setCurrentEmoji] = useState<EmojiItem | null>(null);
-  const [predictions, setPredictions] = useState<GameResult[]>([]);
-  const [score, setScore] = useState(0);
-  const [gameRound, setGameRound] = useState(0);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [showExplanation, setShowExplanation] = useState(true);
-  const [selectedShape, setSelectedShape] = useState<string>('');
-  const [correctShape, setCorrectShape] = useState<string>('');
-  const [currentStep, setCurrentStep] = useState<'input' | 'analysis' | 'classification'>('input');
-  const [networkLayers, setNetworkLayers] = useState<NetworkLayer[]>([]);
-  const [gameFinished, setGameFinished] = useState(false);
-  const [startTime, setStartTime] = useState<number>(0);
-  const [timeElapsed, setTimeElapsed] = useState(0);
-  const [showPixelsCaptured, setShowPixelsCaptured] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [selectedClassification, setSelectedClassification] = useState<string>('');
+  const [userVerdict, setUserVerdict] = useState<string>('');
   const [showHero, setShowHero] = useState(true);
   const [showIntroduction, setShowIntroduction] = useState(false);
-  const [showAnalysisDialog, setShowAnalysisDialog] = useState(false);
-  const [showAnalysisResult, setShowAnalysisResult] = useState(false);
-  const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
-  const [usedEmojiIndexes, setUsedEmojiIndexes] = useState<number[]>([]);
+  const [gameStarted, setGameStarted] = useState(false);
   const { toast } = useToast();
 
-  // Imagens organizadas por categoria geométrica - BANCO ORIGINAL RESTAURADO
-  const emojiItems: EmojiItem[] = [
-    // 🔵 Círculo - APENAS Seres Vivos (organismos com vida)
-    { 
-      emoji: '🐱', 
-      name: 'gato', 
-      category: 'circle', 
-      features: ['olhos redondos', 'focinho arredondado', 'orelhas triangulares', 'pelagem macia'],
-      imageUrl: 'https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '👤', 
-      name: 'pessoa', 
-      category: 'circle', 
-      features: ['rosto oval', 'olhos', 'cabelo', 'expressão humana'],
-      imageUrl: 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🐋', 
-      name: 'baleia', 
-      category: 'circle', 
-      features: ['corpo aerodinâmico', 'nadadeiras', 'respiração', 'mamífero aquático'],
-      imageUrl: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🐴', 
-      name: 'cavalo', 
-      category: 'circle', 
-      features: ['crina fluindo', 'músculos definidos', 'pernas elegantes', 'mamífero terrestre'],
-      imageUrl: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🐄', 
-      name: 'vaca', 
-      category: 'circle', 
-      features: ['corpo robusto', 'cabeça grande', 'manchas naturais', 'mamífero pastoreio'],
-      imageUrl: 'https://images.unsplash.com/photo-1493962853295-0fd70327578a?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🦌', 
-      name: 'veado', 
-      category: 'circle', 
-      features: ['corpo esbelto', 'chifres ramificados', 'pelagem marrom', 'mamífero selvagem'],
-      imageUrl: 'https://images.unsplash.com/photo-1485833077593-4278bba3f11f?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🐻', 
-      name: 'urso', 
-      category: 'circle', 
-      features: ['pelagem densa', 'corpo robusto', 'orelhas arredondadas', 'carnívoro'],
-      imageUrl: 'https://images.unsplash.com/photo-1465379944081-7f47de8d74ac?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🐒', 
-      name: 'macaco', 
-      category: 'circle', 
-      features: ['postura dinâmica', 'membros alongados', 'comportamento ágil', 'primata'],
-      imageUrl: 'https://images.unsplash.com/photo-1501286353178-1ec881214838?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🐕', 
-      name: 'cachorro', 
-      category: 'circle', 
-      features: ['focinho úmido', 'orelhas expressivas', 'cauda balançando', 'companheiro leal'],
-      imageUrl: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🦅', 
-      name: 'pássaro', 
-      category: 'circle', 
-      features: ['penas coloridas', 'bico afiado', 'asas poderosas', 'ave predadora'],
-      imageUrl: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?w=400&h=400&fit=crop'
-    },
-
-    // 🔲 Retângulo - Objetos Manufaturados (criações humanas)
-    { 
-      emoji: '💻', 
-      name: 'computador', 
-      category: 'rectangle', 
-      features: ['tela retangular', 'bordas definidas', 'teclado linear', 'tecnologia digital'],
-      imageUrl: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '💻', 
-      name: 'laptop', 
-      category: 'rectangle', 
-      features: ['formato dobrável', 'tela plana', 'bordas retas', 'portabilidade'],
-      imageUrl: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🖥️', 
-      name: 'monitor', 
-      category: 'rectangle', 
-      features: ['tela grande', 'suporte central', 'formato retangular', 'display digital'],
-      imageUrl: 'https://images.unsplash.com/photo-1483058712412-4245e9b90334?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🏢', 
-      name: 'edifício', 
-      category: 'rectangle', 
-      features: ['estrutura vertical', 'janelas alinhadas', 'fachada geométrica', 'arquitetura urbana'],
-      imageUrl: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🚗', 
-      name: 'carro', 
-      category: 'rectangle', 
-      features: ['carroceria metálica', 'rodas circulares', 'faróis', 'veículo motorizado'],
-      imageUrl: 'https://images.unsplash.com/photo-1494905998402-395d579af36f?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '📱', 
-      name: 'smartphone', 
-      category: 'rectangle', 
-      features: ['tela touchscreen', 'bordas arredondadas', 'interface digital', 'tecnologia móvel'],
-      imageUrl: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🔧', 
-      name: 'ferramenta', 
-      category: 'rectangle', 
-      features: ['metal resistente', 'cabo ergonômico', 'função específica', 'instrumento manual'],
-      imageUrl: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🍴', 
-      name: 'talher', 
-      category: 'rectangle', 
-      features: ['material metálico', 'design funcional', 'utensílio culinário', 'acabamento polido'],
-      imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🎒', 
-      name: 'mochila', 
-      category: 'rectangle', 
-      features: ['tecido resistente', 'zíperes', 'alças ajustáveis', 'compartimentos'],
-      imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🪑', 
-      name: 'cadeira', 
-      category: 'rectangle', 
-      features: ['estrutura rígida', 'assento acolchoado', 'encosto ergonômico', 'móvel funcional'],
-      imageUrl: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop'
-    },
-
-    // 🔺 Triângulo - Elementos Naturais (não vivos)
-    { 
-      emoji: '🏔️', 
-      name: 'montanha', 
-      category: 'triangle', 
-      features: ['pico pontiagudo', 'encosta íngreme', 'formação rochosa', 'elevação natural'],
-      imageUrl: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🌕', 
-      name: 'lua', 
-      category: 'triangle', 
-      features: ['forma circular', 'crateras visíveis', 'brilho noturno', 'satélite natural'],
-      imageUrl: 'https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🌊', 
-      name: 'ondas do mar', 
-      category: 'triangle', 
-      features: ['movimento fluido', 'espuma branca', 'força natural', 'fenômeno aquático'],
-      imageUrl: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🫧', 
-      name: 'bolhas', 
-      category: 'triangle', 
-      features: ['transparência', 'reflexos iridescentes', 'forma esférica', 'fenômeno físico'],
-      imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🌋', 
-      name: 'vulcão', 
-      category: 'triangle', 
-      features: ['cone irregular', 'atividade geológica', 'formação rochosa', 'fenômeno terrestre'],
-      imageUrl: 'https://images.unsplash.com/photo-1577094593080-9ef1dfb13dce?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🏜️', 
-      name: 'deserto', 
-      category: 'triangle', 
-      features: ['dunas de areia', 'paisagem árida', 'extensão vasta', 'ambiente seco'],
-      imageUrl: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🌌', 
-      name: 'galáxia', 
-      category: 'triangle', 
-      features: ['estrelas distantes', 'nebulosas coloridas', 'espaço profundo', 'formação cósmica'],
-      imageUrl: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🌊', 
-      name: 'oceano', 
-      category: 'triangle', 
-      features: ['água salgada', 'horizonte infinito', 'cor azul profunda', 'massa aquática'],
-      imageUrl: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '🏝️', 
-      name: 'praia', 
-      category: 'triangle', 
-      features: ['areia dourada', 'encontro terra-mar', 'paisagem costeira', 'ambiente natural'],
-      imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=400&fit=crop'
-    },
-    { 
-      emoji: '☁️', 
-      name: 'céu', 
-      category: 'triangle', 
-      features: ['nuvens flutuantes', 'tons azulados', 'atmosfera terrestre', 'fenômeno meteorológico'],
-      imageUrl: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400&h=400&fit=crop'
-    }
-  ];
-
-  // Categorias de formas geométricas atualizadas
-  const shapeCategories: ShapeCategory[] = [
-    {
-      shape: 'circle',
-      name: 'Círculo - Seres Vivos',
-      description: 'Organismos que apresentam vida: pessoas, animais e plantas',
-      keywords: ['vida', 'respiração', 'movimento', 'crescimento', 'reprodução'],
-      color: 'bg-green-500 hover:bg-green-600'
-    },
-    {
-      shape: 'rectangle',
-      name: 'Retângulo - Objetos Manufaturados',
-      description: 'Criações humanas: computadores, edifícios, carros e outros artifícios',
-      keywords: ['artificial', 'manufaturado', 'tecnologia', 'ferramenta', 'construção'],
-      color: 'bg-blue-500 hover:bg-blue-600'
-    },
-    {
-      shape: 'triangle',
-      name: 'Triângulo - Elementos Naturais',
-      description: 'Componentes da natureza não vivos: montanhas, oceanos, fenômenos',
-      keywords: ['natural', 'geológico', 'atmosférico', 'paisagem', 'fenômeno'],
-      color: 'bg-purple-500 hover:bg-purple-600'
-    }
-  ];
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (gameStarted && !gameFinished) {
-      interval = setInterval(() => {
-        setTimeElapsed(Math.floor((Date.now() - startTime) / 1000));
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [gameStarted, gameFinished, startTime]);
-
-  const getRandomUnusedEmoji = () => {
-    const availableIndexes = emojiItems
-      .map((_, index) => index)
-      .filter(index => !usedEmojiIndexes.includes(index));
+  const handleImageUpload = (file: File, imageUrl: string) => {
+    setUploadedFile(file);
+    setUploadedImage(imageUrl);
+    setSelectedClassification('');
+    setUserVerdict('');
     
-    if (availableIndexes.length === 0) {
-      // Se todas as imagens foram usadas, reinicia a lista
-      setUsedEmojiIndexes([]);
-      return emojiItems[Math.floor(Math.random() * emojiItems.length)];
-    }
-    
-    const randomIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
-    setUsedEmojiIndexes(prev => [...prev, randomIndex]);
-    return emojiItems[randomIndex];
+    toast({
+      title: "🖼️ Imagem Carregada!",
+      description: `Arquivo "${file.name}" foi carregado com sucesso. Agora faça sua classificação.`,
+    });
   };
 
-  const startNewRound = async () => {
-    setIsProcessing(true);
-    setSelectedShape('');
-    setCurrentStep('input');
-    setShowPixelsCaptured(false);
-    setShowAnalysisResult(false);
+  const handleClearImage = () => {
+    if (uploadedImage) {
+      URL.revokeObjectURL(uploadedImage);
+    }
+    setUploadedImage(null);
+    setUploadedFile(null);
+    setSelectedClassification('');
+    setUserVerdict('');
     
-    const randomEmoji = getRandomUnusedEmoji();
-    setCurrentEmoji(randomEmoji);
+    toast({
+      title: "🗑️ Imagem Removida",
+      description: "Você pode fazer upload de uma nova imagem agora.",
+    });
+  };
+
+  const handleClassification = (classification: string) => {
+    setSelectedClassification(classification);
     
-    console.log('🔍 Iniciando análise de rede neural avançada para:', randomEmoji.name);
+    const classificationNames = {
+      'living': 'Ser Vivo',
+      'manufactured': 'Objeto Manufaturado',
+      'natural': 'Elemento Natural'
+    };
     
-    // Tempo para capturar pixels
-    setTimeout(() => {
-      setShowPixelsCaptured(true);
+    toast({
+      title: "🎯 Classificação Definida!",
+      description: `Você classificou a imagem como: ${classificationNames[classification as keyof typeof classificationNames]}`,
+    });
+  };
+
+  const handleVerdictSubmit = (verdict: string) => {
+    setUserVerdict(verdict);
+    
+    toast({
+      title: "📝 Análise Completa!",
+      description: "Sua análise detalhada foi registrada. Parabéns pela análise completa!",
+    });
+  };
+
+  const handleDownloadImage = () => {
+    if (uploadedImage && uploadedFile) {
+      const link = document.createElement('a');
+      link.href = uploadedImage;
+      link.download = `analise_${uploadedFile.name}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       
-      setTimeout(() => {
-        setCurrentStep('analysis');
-        
-        // REDE NEURAL ULTRA COMPLEXA - 12 camadas com milhares de neurônios
-        const layers: NetworkLayer[] = [
-          {
-            name: 'Camada de Entrada (Input Layer)',
-            description: 'Recebe e preprocessa 480.000 pixels RGB da imagem (1024 neurônios)',
-            icon: <Eye className="h-5 w-5" />,
-            features: ['normalização RGB', 'detecção de ruído', 'calibração de contraste', '1024 neurônios']
-          },
-          {
-            name: 'Conv1 - Detecção Primitiva',
-            description: 'Filtros 3x3 para bordas e pontos básicos (2048 neurônios, 64 filtros)',
-            icon: <Layers className="h-5 w-5" />,
-            features: ['bordas horizontais', 'bordas verticais', 'pontos de interesse', '2048 neurônios']
-          },
-          {
-            name: 'Conv2 - Formas Básicas',
-            description: 'Filtros 5x5 para formas geométricas simples (4096 neurônios, 128 filtros)',
-            icon: <Layers className="h-5 w-5" />,
-            features: ['círculos', 'linhas retas', 'curvas', '4096 neurônios']
-          },
-          {
-            name: 'MaxPooling + Normalização Batch',
-            description: 'Redução dimensional e normalização (2048 neurônios ativos)',
-            icon: <Brain className="h-5 w-5" />,
-            features: ['redução 2x2', 'estabilização', 'prevenção overfitting', '2048 neurônios']
-          },
-          {
-            name: 'Conv3 - Texturas Avançadas',
-            description: 'Filtros 7x7 para texturas e padrões complexos (8192 neurônios, 256 filtros)',
-            icon: <Layers className="h-5 w-5" />,
-            features: ['texturas de pele', 'padrões de superfície', 'gradientes', '8192 neurônios']
-          },
-          {
-            name: 'Conv4 - Partes de Objetos',
-            description: 'Detecta componentes específicos de objetos (16384 neurônios, 512 filtros)',
-            icon: <Layers className="h-5 w-5" />,
-            features: [...randomEmoji.features.slice(0, 2), '16384 neurônios']
-          },
-          {
-            name: 'Attention Layer - Foco Inteligente',
-            description: 'Mecanismo de atenção multi-cabeça (32768 neurônios)',
-            icon: <Brain className="h-5 w-5" />,
-            features: ['foco seletivo', 'pesos adaptativos', 'relevância espacial', '32768 neurônios']
-          },
-          {
-            name: 'Conv5 - Características Ultra-Complexas',
-            description: 'Combinação de características de alto nível (65536 neurônios, 1024 filtros)',
-            icon: <Layers className="h-5 w-5" />,
-            features: [...randomEmoji.features.slice(2), '65536 neurônios']
-          },
-          {
-            name: 'Transformer Block - Contextualização',
-            description: 'Módulo transformer para compreensão contextual (131072 neurônios)',
-            icon: <Brain className="h-5 w-5" />,
-            features: ['auto-atenção', 'codificação posicional', 'contexto global', '131072 neurônios']
-          },
-          {
-            name: 'Dense Layers - Raciocínio Profundo',
-            description: 'Camadas densas para tomada de decisão (262144→131072→65536 neurônios)',
-            icon: <Brain className="h-5 w-5" />,
-            features: ['correlação global', 'raciocínio contextual', 'memória de padrões', '262144 neurônios']
-          },
-          {
-            name: 'Ensemble Layer - Combinação de Modelos',
-            description: 'Combina múltiples redes especializadas (32768 neurônios)',
-            icon: <Zap className="h-5 w-5" />,
-            features: ['fusão de modelos', 'votação ponderada', 'robustez aumentada', '32768 neurônios']
-          },
-          {
-            name: 'Output - Classificação Final Ultra-Precisa',
-            description: 'Softmax com confiança calibrada (1024 neurônios de saída)',
-            icon: <Zap className="h-5 w-5" />,
-            features: ['probabilidades calibradas', 'confiança da rede', randomEmoji.name, '1024 neurônios']
-          }
-        ];
-        
-        setNetworkLayers(layers);
-        
-        // Tempo mais longo para análise ultra-complexa (18 segundos)
-        setTimeout(() => {
-          setCurrentStep('classification');
-          
-          const mainPrediction = { label: randomEmoji.name, score: 0.91 + Math.random() * 0.07 };
-          const secondaryPredictions = [
-            { label: 'categoria similar', score: 0.06 + Math.random() * 0.02 },
-            { label: 'alternativa possível', score: 0.01 + Math.random() * 0.02 }
-          ];
-          
-          const allPredictions = [mainPrediction, ...secondaryPredictions];
-          setPredictions(allPredictions);
-          setCorrectShape(randomEmoji.category);
-          setGameRound(prev => prev + 1);
-          setIsProcessing(false);
-          
-          console.log('📊 Classificação de rede neural ultra-complexa completa:', allPredictions);
-        }, 18000); // 18 segundos para análise ultra-complexa
-      }, 2000);
-    }, 3000);
-  };
-
-  const handleShapeSelection = (shape: string) => {
-    if (selectedShape !== '' || !currentEmoji) return;
-    
-    setSelectedShape(shape);
-    
-    const isCorrect = shape === correctShape;
-    setIsCorrectAnswer(isCorrect);
-    setShowAnalysisResult(true);
-    
-    const selectedCategory = shapeCategories.find(cat => cat.shape === shape);
-    const correctCategory = shapeCategories.find(cat => cat.shape === correctShape);
-
-    if (isCorrect) {
-      setScore(prev => prev + 10);
       toast({
-        title: "🎉 Classificação Correta!",
-        description: `Excelente! A rede neural identificou "${currentEmoji?.name}" como ${correctCategory?.name}`,
-      });
-    } else {
-      toast({
-        title: "🤖 Análise da Rede Neural",
-        description: `A rede classificou "${currentEmoji?.name}" como ${correctCategory?.name}. ${selectedCategory?.name} tem características diferentes.`,
-        variant: "destructive"
+        title: "📥 Download Iniciado",
+        description: "A imagem analisada está sen do baixada.",
       });
     }
-
-    // Mostrar modal após 3 segundos
-    setTimeout(() => {
-      setShowAnalysisDialog(true);
-      setShowAnalysisResult(false);
-    }, 3000);
-  };
-
-  const handleNewAnalysis = () => {
-    setShowAnalysisDialog(false);
-    startNewRound();
-  };
-
-  const handleEndSimulation = () => {
-    setShowAnalysisDialog(false);
-    setGameFinished(true);
-  };
-
-  const resetGame = () => {
-    setScore(0);
-    setGameRound(0);
-    setPredictions([]);
-    setCurrentEmoji(null);
-    setGameStarted(false);
-    setShowExplanation(true);
-    setSelectedShape('');
-    setCorrectShape('');
-    setCurrentStep('input');
-    setNetworkLayers([]);
-    setGameFinished(false);
-    setTimeElapsed(0);
-    setShowPixelsCaptured(false);
-    setShowHero(true);
-    setShowIntroduction(false);
-    setUsedEmojiIndexes([]);
-    setShowAnalysisResult(false);
-    setShowAnalysisDialog(false);
   };
 
   const startIntroduction = () => {
@@ -528,13 +94,15 @@ const ImageRecognitionGame = () => {
     setShowHero(false);
     setShowIntroduction(false);
     setGameStarted(true);
-    setShowExplanation(false);
-    setStartTime(Date.now());
-    startNewRound();
   };
 
-  const finishGame = () => {
-    setGameFinished(true);
+  const resetAnalysis = () => {
+    handleClearImage();
+    
+    toast({
+      title: "🔄 Nova Análise",
+      description: "Sistema resetado. Você pode começar uma nova análise.",
+    });
   };
 
   if (showHero) {
@@ -545,93 +113,127 @@ const ImageRecognitionGame = () => {
     return <ProjectIntroduction onStartGame={startGame} />;
   }
 
-  if (gameFinished) {
-    return (
-      <GameResults 
-        score={score}
-        gameRound={gameRound}
-        timeElapsed={timeElapsed}
-        onRestart={resetGame}
-      />
-    );
-  }
-
   return (
     <div className="min-h-screen p-4 bg-gradient-to-br from-black via-yellow-900 to-orange-900 font-neural">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <GameHeader />
 
-        {showExplanation && !gameStarted && <GameExplanation />}
-
-        <GameScore score={score} gameRound={gameRound} gameStarted={gameStarted} />
-
-        {!gameStarted ? (
-          <GameStart onStartGame={startGame} />
-        ) : (
-          <div className="grid lg:grid-cols-3 gap-6">
-            <EmojiDisplay 
-              currentEmoji={currentEmoji} 
-              showPixelsCaptured={showPixelsCaptured}
-              isDarkTheme={true}
-            />
-            <NeuralProcessing 
-              currentStep={currentStep}
-              networkLayers={networkLayers}
-              predictions={predictions}
-              isDarkTheme={true}
-            />
-            <ShapeClassification 
-              currentStep={currentStep}
-              selectedShape={selectedShape}
-              onShapeSelection={handleShapeSelection}
-              onResetGame={resetGame}
-              onFinishGame={finishGame}
-              isDarkTheme={true}
-            />
-          </div>
-        )}
-
-        {/* Resultado da Análise - Barra colorida mais vibrante e interativa no topo */}
-        {showAnalysisResult && selectedShape && (
-          <div className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-50 px-8 py-4 rounded-xl shadow-2xl border-4 transition-all duration-700 animate-bounce neural-interactive ${
-            isCorrectAnswer 
-              ? 'bg-gradient-to-r from-green-400 via-green-500 to-green-600 border-green-300 text-white shadow-green-500/60 hover:shadow-green-400/80' 
-              : 'bg-gradient-to-r from-red-500 via-red-600 to-red-700 border-red-400 text-white shadow-red-500/60 hover:shadow-red-400/80'
-          }`}>
-            <div className="flex items-center gap-3">
-              <span className="text-3xl animate-pulse">
-                {isCorrectAnswer ? '🎉' : '❌'}
-              </span>
-              <div className="flex flex-col">
-                <span className="font-bold text-xl neural-text-bright">
-                  {isCorrectAnswer ? '🎯 EXCELENTE!' : '🤔 QUASE LÁ!'}
-                </span>
-                <span className="text-sm opacity-90 font-medium">
-                  {isCorrectAnswer 
-                    ? `Rede neural classificou "${currentEmoji?.name}" perfeitamente!`
-                    : `A classificação correta era ${shapeCategories.find(cat => cat.shape === correctShape)?.name}.`
-                  }
-                </span>
+        {/* Progresso da análise */}
+        <div className="mb-8">
+          <div className="bg-black/50 rounded-lg p-4 border border-orange-500">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-orange-300 font-medium">📊 Progresso da Análise</h3>
+              <button
+                onClick={resetAnalysis}
+                className="text-orange-400 hover:text-orange-300 text-sm underline"
+              >
+                🔄 Nova Análise
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-4">
+              <div className={`p-3 rounded-lg border text-center transition-all duration-300 ${
+                uploadedImage 
+                  ? 'bg-green-900 border-green-600 text-green-200' 
+                  : 'bg-orange-800 border-orange-600 text-orange-300'
+              }`}>
+                <div className="text-lg mb-1">
+                  {uploadedImage ? '✅' : '1️⃣'}
+                </div>
+                <div className="text-sm font-medium">Upload</div>
+              </div>
+              
+              <div className={`p-3 rounded-lg border text-center transition-all duration-300 ${
+                selectedClassification 
+                  ? 'bg-green-900 border-green-600 text-green-200' 
+                  : uploadedImage 
+                    ? 'bg-orange-800 border-orange-600 text-orange-300' 
+                    : 'bg-yellow-800 border-yellow-600 text-yellow-400 opacity-50'
+              }`}>
+                <div className="text-lg mb-1">
+                  {selectedClassification ? '✅' : uploadedImage ? '2️⃣' : '⏳'}
+                </div>
+                <div className="text-sm font-medium">Classificação</div>
+              </div>
+              
+              <div className={`p-3 rounded-lg border text-center transition-all duration-300 ${
+                userVerdict 
+                  ? 'bg-green-900 border-green-600 text-green-200' 
+                  : selectedClassification 
+                    ? 'bg-orange-800 border-orange-600 text-orange-300' 
+                    : 'bg-yellow-800 border-yellow-600 text-yellow-400 opacity-50'
+              }`}>
+                <div className="text-lg mb-1">
+                  {userVerdict ? '✅' : selectedClassification ? '3️⃣' : '⏳'}
+                </div>
+                <div className="text-sm font-medium">Veredito</div>
               </div>
             </div>
           </div>
-        )}
+        </div>
 
-        {currentEmoji && currentStep === 'classification' && (
-          <DetectedFeatures 
-            currentEmoji={currentEmoji}
-            correctShape={correctShape}
-            currentStep={currentStep}
+        {/* Interface principal */}
+        <div className="grid lg:grid-cols-3 gap-6">
+          <ImageUploadZone 
+            onImageUpload={handleImageUpload}
+            uploadedImage={uploadedImage}
+            onClearImage={handleClearImage}
+            isDarkTheme={true}
           />
-        )}
+          
+          <UserClassification 
+            onClassification={handleClassification}
+            selectedClassification={selectedClassification}
+            isDarkTheme={true}
+            uploadedImage={uploadedImage}
+          />
+          
+          <UserVerdict 
+            uploadedImage={uploadedImage}
+            selectedClassification={selectedClassification}
+            onVerdictSubmit={handleVerdictSubmit}
+            onDownloadImage={handleDownloadImage}
+            isDarkTheme={true}
+          />
+        </div>
 
-        <AnalysisCompletedDialog
-          isOpen={showAnalysisDialog}
-          onNewAnalysis={handleNewAnalysis}
-          onEndSimulation={handleEndSimulation}
-          currentScore={score}
-          currentRound={gameRound}
-        />
+        {/* Resumo final */}
+        {userVerdict && (
+          <div className="mt-8 p-6 bg-gradient-to-r from-green-900 via-emerald-900 to-green-900 rounded-xl border-2 border-green-600">
+            <h3 className="text-xl font-bold text-green-200 mb-4 flex items-center gap-2">
+              🎉 Análise Completa Realizada!
+            </h3>
+            
+            <div className="grid md:grid-cols-3 gap-4 mb-4">
+              <div className="bg-green-800 p-4 rounded-lg">
+                <h4 className="font-medium text-green-200 mb-2">📤 Imagem</h4>
+                <p className="text-sm text-green-300">
+                  {uploadedFile?.name || 'Imagem carregada'}
+                </p>
+              </div>
+              
+              <div className="bg-green-800 p-4 rounded-lg">
+                <h4 className="font-medium text-green-200 mb-2">🎯 Classificação</h4>
+                <p className="text-sm text-green-300">
+                  {selectedClassification === 'living' && 'Ser Vivo'}
+                  {selectedClassification === 'manufactured' && 'Objeto Manufaturado'}
+                  {selectedClassification === 'natural' && 'Elemento Natural'}
+                </p>
+              </div>
+              
+              <div className="bg-green-800 p-4 rounded-lg">
+                <h4 className="font-medium text-green-200 mb-2">📝 Análise</h4>
+                <p className="text-sm text-green-300">
+                  {userVerdict.substring(0, 50)}...
+                </p>
+              </div>
+            </div>
+            
+            <p className="text-green-300 text-sm">
+              💡 <strong>Parabéns!</strong> Você demonstrou como a inteligência humana processa e analisa informações visuais de forma consciente e detalhada.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
