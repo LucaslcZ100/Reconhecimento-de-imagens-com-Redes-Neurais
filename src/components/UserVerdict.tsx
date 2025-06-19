@@ -1,9 +1,8 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Download, MessageSquare, CheckCircle, User, FileText, Sparkles, Zap, Robot } from 'lucide-react';
+import { Download, MessageSquare, CheckCircle, User, FileText, Sparkles, Zap, Bot } from 'lucide-react';
 import { useState } from 'react';
 import { useMouseActivity } from '@/hooks/useMouseActivity';
 import { ImageAnalysisResult } from '@/utils/imageAnalysis';
@@ -129,7 +128,7 @@ const UserVerdict = ({
                     : 'bg-gradient-to-r from-yellow-100 to-orange-100 border-yellow-200')
             } ${isMouseActive ? 'animate-fade-in' : ''}`}>
               <div className="flex items-center gap-2 mb-3">
-                <Robot className={`h-5 w-5 ${
+                <Bot className={`h-5 w-5 ${
                   isUserCorrect 
                     ? (isDarkTheme ? 'text-green-300' : 'text-green-600')
                     : (isDarkTheme ? 'text-yellow-300' : 'text-yellow-600')

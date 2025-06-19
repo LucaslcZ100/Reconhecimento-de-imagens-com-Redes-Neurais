@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Brain, Circle, RectangleHorizontal, Triangle, User, CheckCircle, Sparkles, Zap, Robot } from 'lucide-react';
+import { Brain, Circle, RectangleHorizontal, Triangle, User, CheckCircle, Sparkles, Zap, Bot } from 'lucide-react';
 import { useState } from 'react';
 import { useMouseActivity } from '@/hooks/useMouseActivity';
 import { ImageAnalysisResult } from '@/utils/imageAnalysis';
@@ -146,7 +146,7 @@ const UserClassification = ({
                 : 'bg-gradient-to-r from-blue-100 to-indigo-100 border-blue-200'
             } ${isMouseActive ? 'animate-fade-in' : ''}`}>
               <div className="flex items-center gap-2 mb-2">
-                <Robot className={`h-5 w-5 ${
+                <Bot className={`h-5 w-5 ${
                   isDarkTheme ? 'text-blue-300' : 'text-blue-600'
                 } ${isMouseActive ? 'animate-bounce' : ''}`} />
                 <span className={`font-medium ${
