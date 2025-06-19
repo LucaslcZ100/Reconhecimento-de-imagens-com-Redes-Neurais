@@ -9,15 +9,19 @@ import UserVerdict from './UserVerdict';
 import AnalysisHistory from './AnalysisHistory';
 import InteractiveHero from './InteractiveHero';
 import ProjectIntroduction from './ProjectIntroduction';
+import AIUnpluggedInfo from './AIUnpluggedInfo';
+import CodeAnalysisSystem from './CodeAnalysisSystem';
+import { Button } from '@/components/ui/button';
+import { Home, Code, BookOpen } from 'lucide-react';
+
+type GameState = 'hero' | 'introduction' | 'game' | 'info' | 'codeAnalysis';
 
 const ImageRecognitionGame = () => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [selectedClassification, setSelectedClassification] = useState<string>('');
   const [userVerdict, setUserVerdict] = useState<string>('');
-  const [showHero, setShowHero] = useState(true);
-  const [showIntroduction, setShowIntroduction] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false);
+  const [gameState, setGameState] = useState<GameState>('hero');
   const [analysisResult, setAnalysisResult] = useState<ImageAnalysisResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [historyKey, setHistoryKey] = useState(0);
@@ -137,17 +141,6 @@ const ImageRecognitionGame = () => {
     }
   };
 
-  const startIntroduction = () => {
-    setShowHero(false);
-    setShowIntroduction(true);
-  };
-
-  const startGame = () => {
-    setShowHero(false);
-    setShowIntroduction(false);
-    setGameStarted(true);
-  };
-
   const resetAnalysis = () => {
     handleClearImage();
     
@@ -157,12 +150,77 @@ const ImageRecognitionGame = () => {
     });
   };
 
-  if (showHero) {
+  const startIntroduction = () => {
+    setGameState('introduction');
+  };
+
+  const startGame = () => {
+    setGameState('game');
+  };
+
+  const showInfo = () => {
+    setGameState('info');
+  };
+
+  const showCodeAnalysis = () => {
+    setGameState('codeAnalysis');
+  };
+
+  const returnToMenu = () => {
+    setGameState('hero');
+  };
+
+  if (gameState === 'hero') {
     return <InteractiveHero onStartIntroduction={startIntroduction} />;
   }
 
-  if (showIntroduction) {
+  if (gameState === 'introduction') {
     return <ProjectIntroduction onStartGame={startGame} />;
+  }
+
+  if (gameState === 'info') {
+    return <AIUnpluggedInfo onBack={returnToMenu} />;
+  }
+
+  if (gameState === 'codeAnalysis') {
+    return (
+      <div className={`min-h-screen p-4 bg-gradient-to-br from-black via-blue-900 to-purple-900 font-neural transition-all duration-500 ${
+        isMouseActive ? 'animate-fade-in' : ''
+      }`}>
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-8 flex gap-4">
+            <Button
+              onClick={returnToMenu}
+              className={`transition-all duration-300 ${
+                isMouseActive ? 'transform hover:scale-110' : ''
+              } bg-blue-600 hover:bg-blue-700 text-white`}
+            >
+              <Home className="h-4 w-4 mr-2" />
+              🏠 Menu Principal
+            </Button>
+            <Button
+              onClick={startGame}
+              className={`transition-all duration-300 ${
+                isMouseActive ? 'transform hover:scale-110' : ''
+              } bg-orange-600 hover:bg-orange-700 text-white`}
+            >
+              🎮 Jogo de Reconhecimento
+            </Button>
+            <Button
+              onClick={showInfo}
+              className={`transition-all duration-300 ${
+                isMouseActive ? 'transform hover:scale-110' : ''
+              } bg-purple-600 hover:bg-purple-700 text-white`}
+            >
+              <BookOpen className="h-4 w-4 mr-2" />
+              📚 Curiosidades
+            </Button>
+          </div>
+          
+          <CodeAnalysisSystem isDarkTheme={true} />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -171,6 +229,39 @@ const ImageRecognitionGame = () => {
     }`}>
       <div className="max-w-7xl mx-auto">
         <GameHeader />
+
+        {/* Menu de navegação */}
+        <div className={`mb-6 flex gap-4 transition-all duration-500 ${
+          isMouseActive ? 'animate-fade-in' : ''
+        }`}>
+          <Button
+            onClick={returnToMenu}
+            className={`transition-all duration-300 ${
+              isMouseActive ? 'transform hover:scale-110' : ''
+            } bg-orange-600 hover:bg-orange-700 text-white`}
+          >
+            <Home className="h-4 w-4 mr-2" />
+            🏠 Menu Principal
+          </Button>
+          <Button
+            onClick={showCodeAnalysis}
+            className={`transition-all duration-300 ${
+              isMouseActive ? 'transform hover:scale-110' : ''
+            } bg-blue-600 hover:bg-blue-700 text-white`}
+          >
+            <Code className="h-4 w-4 mr-2" />
+            💻 Análise de Código
+          </Button>
+          <Button
+            onClick={showInfo}
+            className={`transition-all duration-300 ${
+              isMouseActive ? 'transform hover:scale-110' : ''
+            } bg-purple-600 hover:bg-purple-700 text-white`}
+          >
+            <BookOpen className="h-4 w-4 mr-2" />
+            📚 Curiosidades
+          </Button>
+        </div>
 
         {/* Progresso da análise */}
         <div className={`mb-8 transition-all duration-500 ${
