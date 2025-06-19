@@ -80,7 +80,7 @@ const ImageRecognitionGame = () => {
       
       toast({
         title: "📥 Download Iniciado",
-        description: "A imagem analisada está sen do baixada.",
+        description: "A imagem analisada está sendo baixada.",
       });
     }
   };
@@ -114,28 +114,31 @@ const ImageRecognitionGame = () => {
   }
 
   return (
-    <div className="min-h-screen p-4 bg-gradient-to-br from-black via-yellow-900 to-orange-900 font-neural">
+    <div className="min-h-screen p-4 bg-gradient-to-br from-black via-yellow-900 to-orange-900 font-neural animate-fade-in">
       <div className="max-w-7xl mx-auto">
         <GameHeader />
 
         {/* Progresso da análise */}
-        <div className="mb-8">
-          <div className="bg-black/50 rounded-lg p-4 border border-orange-500">
+        <div className="mb-8 animate-fade-in">
+          <div className="bg-black/50 rounded-lg p-4 border border-orange-500 transition-all duration-500 hover:scale-105 hover:shadow-xl hover:shadow-orange-500/20">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-orange-300 font-medium">📊 Progresso da Análise</h3>
+              <h3 className="text-orange-300 font-medium flex items-center gap-2">
+                📊 Progresso da Análise
+                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+              </h3>
               <button
                 onClick={resetAnalysis}
-                className="text-orange-400 hover:text-orange-300 text-sm underline"
+                className="text-orange-400 hover:text-orange-300 text-sm underline transition-all duration-300 hover:scale-110"
               >
                 🔄 Nova Análise
               </button>
             </div>
             
             <div className="grid grid-cols-3 gap-4">
-              <div className={`p-3 rounded-lg border text-center transition-all duration-300 ${
+              <div className={`p-3 rounded-lg border text-center transition-all duration-500 transform hover:scale-110 ${
                 uploadedImage 
-                  ? 'bg-green-900 border-green-600 text-green-200' 
-                  : 'bg-orange-800 border-orange-600 text-orange-300'
+                  ? 'bg-green-900 border-green-600 text-green-200 animate-pulse' 
+                  : 'bg-orange-800 border-orange-600 text-orange-300 animate-bounce'
               }`}>
                 <div className="text-lg mb-1">
                   {uploadedImage ? '✅' : '1️⃣'}
@@ -143,11 +146,11 @@ const ImageRecognitionGame = () => {
                 <div className="text-sm font-medium">Upload</div>
               </div>
               
-              <div className={`p-3 rounded-lg border text-center transition-all duration-300 ${
+              <div className={`p-3 rounded-lg border text-center transition-all duration-500 transform hover:scale-110 ${
                 selectedClassification 
-                  ? 'bg-green-900 border-green-600 text-green-200' 
+                  ? 'bg-green-900 border-green-600 text-green-200 animate-pulse' 
                   : uploadedImage 
-                    ? 'bg-orange-800 border-orange-600 text-orange-300' 
+                    ? 'bg-orange-800 border-orange-600 text-orange-300 animate-bounce' 
                     : 'bg-yellow-800 border-yellow-600 text-yellow-400 opacity-50'
               }`}>
                 <div className="text-lg mb-1">
@@ -156,11 +159,11 @@ const ImageRecognitionGame = () => {
                 <div className="text-sm font-medium">Classificação</div>
               </div>
               
-              <div className={`p-3 rounded-lg border text-center transition-all duration-300 ${
+              <div className={`p-3 rounded-lg border text-center transition-all duration-500 transform hover:scale-110 ${
                 userVerdict 
-                  ? 'bg-green-900 border-green-600 text-green-200' 
+                  ? 'bg-green-900 border-green-600 text-green-200 animate-pulse' 
                   : selectedClassification 
-                    ? 'bg-orange-800 border-orange-600 text-orange-300' 
+                    ? 'bg-orange-800 border-orange-600 text-orange-300 animate-bounce' 
                     : 'bg-yellow-800 border-yellow-600 text-yellow-400 opacity-50'
               }`}>
                 <div className="text-lg mb-1">
@@ -174,62 +177,78 @@ const ImageRecognitionGame = () => {
 
         {/* Interface principal */}
         <div className="grid lg:grid-cols-3 gap-6">
-          <ImageUploadZone 
-            onImageUpload={handleImageUpload}
-            uploadedImage={uploadedImage}
-            onClearImage={handleClearImage}
-            isDarkTheme={true}
-          />
+          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <ImageUploadZone 
+              onImageUpload={handleImageUpload}
+              uploadedImage={uploadedImage}
+              onClearImage={handleClearImage}
+              isDarkTheme={true}
+            />
+          </div>
           
-          <UserClassification 
-            onClassification={handleClassification}
-            selectedClassification={selectedClassification}
-            isDarkTheme={true}
-            uploadedImage={uploadedImage}
-          />
+          <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            <UserClassification 
+              onClassification={handleClassification}
+              selectedClassification={selectedClassification}
+              isDarkTheme={true}
+              uploadedImage={uploadedImage}
+            />
+          </div>
           
-          <UserVerdict 
-            uploadedImage={uploadedImage}
-            selectedClassification={selectedClassification}
-            onVerdictSubmit={handleVerdictSubmit}
-            onDownloadImage={handleDownloadImage}
-            isDarkTheme={true}
-          />
+          <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
+            <UserVerdict 
+              uploadedImage={uploadedImage}
+              selectedClassification={selectedClassification}
+              onVerdictSubmit={handleVerdictSubmit}
+              onDownloadImage={handleDownloadImage}
+              isDarkTheme={true}
+            />
+          </div>
         </div>
 
         {/* Resumo final */}
         {userVerdict && (
-          <div className="mt-8 p-6 bg-gradient-to-r from-green-900 via-emerald-900 to-green-900 rounded-xl border-2 border-green-600">
-            <h3 className="text-xl font-bold text-green-200 mb-4 flex items-center gap-2">
+          <div className="mt-8 p-6 bg-gradient-to-r from-green-900 via-emerald-900 to-green-900 rounded-xl border-2 border-green-600 animate-fade-in transition-all duration-500 hover:scale-105 hover:shadow-xl hover:shadow-green-500/30">
+            <h3 className="text-xl font-bold text-green-200 mb-4 flex items-center gap-2 animate-bounce">
               🎉 Análise Completa Realizada!
+              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
             </h3>
             
             <div className="grid md:grid-cols-3 gap-4 mb-4">
-              <div className="bg-green-800 p-4 rounded-lg">
-                <h4 className="font-medium text-green-200 mb-2">📤 Imagem</h4>
+              <div className="bg-green-800 p-4 rounded-lg transition-all duration-300 hover:scale-105 animate-fade-in">
+                <h4 className="font-medium text-green-200 mb-2 flex items-center gap-2">
+                  📤 Imagem
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                </h4>
                 <p className="text-sm text-green-300">
                   {uploadedFile?.name || 'Imagem carregada'}
                 </p>
               </div>
               
-              <div className="bg-green-800 p-4 rounded-lg">
-                <h4 className="font-medium text-green-200 mb-2">🎯 Classificação</h4>
-                <p className="text-sm text-green-300">
+              <div className="bg-green-800 p-4 rounded-lg transition-all duration-300 hover:scale-105 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                <h4 className="font-medium text-green-200 mb-2 flex items-center gap-2">
+                  🎯 Classificação
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce"></div>
+                </h4>
+                <p className="text-sm text-green-300 animate-pulse">
                   {selectedClassification === 'living' && 'Ser Vivo'}
                   {selectedClassification === 'manufactured' && 'Objeto Manufaturado'}
                   {selectedClassification === 'natural' && 'Elemento Natural'}
                 </p>
               </div>
               
-              <div className="bg-green-800 p-4 rounded-lg">
-                <h4 className="font-medium text-green-200 mb-2">📝 Análise</h4>
+              <div className="bg-green-800 p-4 rounded-lg transition-all duration-300 hover:scale-105 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+                <h4 className="font-medium text-green-200 mb-2 flex items-center gap-2">
+                  📝 Análise
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-spin"></div>
+                </h4>
                 <p className="text-sm text-green-300">
                   {userVerdict.substring(0, 50)}...
                 </p>
               </div>
             </div>
             
-            <p className="text-green-300 text-sm">
+            <p className="text-green-300 text-sm animate-pulse">
               💡 <strong>Parabéns!</strong> Você demonstrou como a inteligência humana processa e analisa informações visuais de forma consciente e detalhada.
             </p>
           </div>
