@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { analyzeImage, saveAnalysisToHistory, ImageAnalysisResult } from '@/utils/imageAnalysis';
@@ -35,7 +34,6 @@ const ImageRecognitionGame = () => {
     setAnalysisResult(null);
     setShowAISuggestion(false);
     
-    // Análise automática em background
     setIsAnalyzing(true);
     try {
       const result = await analyzeImage(file);
@@ -43,12 +41,12 @@ const ImageRecognitionGame = () => {
       
       toast({
         title: "🖼️ Imagem Analisada!",
-        description: `Arquivo "${file.name}" foi carregado com sucesso.`,
+        description: `Arquivo "${file.name}" carregado com sucesso.`,
       });
     } catch (error) {
       toast({
         title: "❌ Erro na Análise",
-        description: "Não foi possível analisar a imagem automaticamente.",
+        description: "Não foi possível analisar a imagem.",
         variant: "destructive"
       });
     } finally {
@@ -84,14 +82,13 @@ const ImageRecognitionGame = () => {
     
     toast({
       title: "🎯 Classificação Definida!",
-      description: `Você classificou a imagem como: ${classificationNames[classification as keyof typeof classificationNames]}`,
+      description: `Você classificou: ${classificationNames[classification as keyof typeof classificationNames]}`,
     });
   };
 
   const handleVerdictSubmit = (verdict: string) => {
     setUserVerdict(verdict);
     
-    // Salvar análise no histórico
     if (uploadedFile && analysisResult) {
       const isCorrect = selectedClassification === analysisResult.suggestedClassification;
       
@@ -106,7 +103,7 @@ const ImageRecognitionGame = () => {
       });
       
       setHistoryKey(prev => prev + 1);
-      setShowAISuggestion(true); // Mostrar sugestão da IA após veredito
+      setShowAISuggestion(true);
       
       const isCorrectMessage = isCorrect ? "🎉 Classificação Correta!" : "🤔 Classificação Diferente";
       const description = isCorrect 
@@ -150,8 +147,8 @@ const ImageRecognitionGame = () => {
     handleClearImage();
     
     toast({
-      title: "🔄 Nova Análise",
-      description: "Sistema resetado. Você pode começar uma nova análise.",
+      title: "🔄 Nova Análise Iniciada",
+      description: "Sistema resetado para nova análise.",
     });
   };
 
@@ -172,57 +169,45 @@ const ImageRecognitionGame = () => {
   };
 
   if (gameState === 'hero') {
-    return <InteractiveHero onStartIntroduction={startIntroduction} />;
+    return <InteractiveHero onStartIntroduction={() => setGameState('introduction')} />;
   }
 
   if (gameState === 'introduction') {
-    return <ProjectIntroduction onStartGame={startGame} />;
+    return <ProjectIntroduction onStartGame={() => setGameState('game')} />;
   }
 
   if (gameState === 'info') {
-    return <AIUnpluggedInfo onBack={returnToMenu} />;
+    return <AIUnpluggedInfo onBack={() => setGameState('hero')} />;
   }
 
   return (
-    <div className="min-h-screen p-4 bg-gradient-to-br from-black via-yellow-900 to-orange-900 font-neural">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-black via-yellow-900 to-orange-900">
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
         <GameHeader />
 
-        {/* Menu de navegação */}
-        <div className="mb-6 flex gap-4">
+        {/* Menu de navegação compacto */}
+        <div className="flex justify-center gap-3 mb-6">
           <Button
-            onClick={returnToMenu}
+            onClick={() => setGameState('hero')}
             className="bg-orange-600 hover:bg-orange-700 text-white"
+            size="sm"
           >
             <Home className="h-4 w-4 mr-2" />
-            🏠 Menu Principal
+            Menu
           </Button>
           <Button
-            onClick={showInfo}
+            onClick={() => setGameState('info')}
             className="bg-purple-600 hover:bg-purple-700 text-white"
+            size="sm"
           >
             <BookOpen className="h-4 w-4 mr-2" />
-            📚 Curiosidades
+            Curiosidades
           </Button>
         </div>
 
-        {/* Botão de nova análise destacado */}
-        {userVerdict && (
-          <div className="mb-8 text-center">
-            <Button
-              onClick={resetAnalysis}
-              size="lg"
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg font-bold"
-            >
-              <RotateCcw className="h-6 w-6 mr-3" />
-              🔄 Iniciar Nova Análise
-            </Button>
-          </div>
-        )}
-
-        {/* Interface principal */}
-        <div className="grid lg:grid-cols-4 gap-6">
-          <div>
+        {/* Interface principal responsiva */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <div className="space-y-6">
             <ImageUploadZone 
               onImageUpload={handleImageUpload}
               uploadedImage={uploadedImage}
@@ -231,29 +216,31 @@ const ImageRecognitionGame = () => {
             />
           </div>
           
-          <div>
+          <div className="space-y-6">
             <UserClassification 
               onClassification={handleClassification}
               selectedClassification={selectedClassification}
               isDarkTheme={true}
               uploadedImage={uploadedImage}
-              analysisResult={null} // Não mostrar sugestão da IA aqui
+              analysisResult={null}
               isAnalyzing={isAnalyzing}
             />
           </div>
           
-          <div>
+          <div className="space-y-6">
             <UserVerdict 
               uploadedImage={uploadedImage}
               selectedClassification={selectedClassification}
               onVerdictSubmit={handleVerdictSubmit}
               onDownloadImage={handleDownloadImage}
+              onResetAnalysis={resetAnalysis}
               isDarkTheme={true}
-              analysisResult={showAISuggestion ? analysisResult : null} // Mostrar apenas após veredito
+              analysisResult={showAISuggestion ? analysisResult : null}
+              userVerdict={userVerdict}
             />
           </div>
           
-          <div>
+          <div className="space-y-6">
             <AnalysisHistory 
               isDarkTheme={true}
               key={historyKey}
@@ -261,42 +248,6 @@ const ImageRecognitionGame = () => {
             />
           </div>
         </div>
-
-        {/* Resumo final */}
-        {userVerdict && showAISuggestion && (
-          <div className="mt-8 p-6 bg-gradient-to-r from-green-900 via-emerald-900 to-green-900 rounded-xl border-2 border-green-600">
-            <h3 className="text-xl font-bold text-green-200 mb-4 flex items-center gap-2">
-              🎉 Análise Completa Realizada!
-            </h3>
-            
-            <div className="grid md:grid-cols-3 gap-4 mb-4">
-              <div className="bg-green-800 p-4 rounded-lg">
-                <h4 className="font-medium text-green-200 mb-2">📤 Imagem</h4>
-                <p className="text-sm text-green-300">
-                  {uploadedFile?.name || 'Imagem carregada'}
-                </p>
-              </div>
-              
-              <div className="bg-green-800 p-4 rounded-lg">
-                <h4 className="font-medium text-green-200 mb-2">🎯 Classificação</h4>
-                <p className="text-sm text-green-300">
-                  {getClassificationName(selectedClassification)}
-                </p>
-              </div>
-              
-              <div className="bg-green-800 p-4 rounded-lg">
-                <h4 className="font-medium text-green-200 mb-2">📝 Análise</h4>
-                <p className="text-sm text-green-300">
-                  {userVerdict.substring(0, 50)}...
-                </p>
-              </div>
-            </div>
-            
-            <p className="text-green-300 text-sm">
-              💡 <strong>Parabéns!</strong> Você demonstrou como a inteligência humana processa e analisa informações visuais de forma consciente e detalhada.
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

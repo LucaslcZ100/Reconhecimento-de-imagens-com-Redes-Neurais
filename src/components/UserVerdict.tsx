@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Download, MessageSquare, CheckCircle, FileText, Bot, RotateCcw } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ImageAnalysisResult } from '@/utils/imageAnalysis';
 
 interface UserVerdictProps {
@@ -12,20 +12,39 @@ interface UserVerdictProps {
   selectedClassification: string;
   onVerdictSubmit: (verdict: string) => void;
   onDownloadImage: () => void;
+  onResetAnalysis: () => void;
   isDarkTheme: boolean;
   analysisResult?: ImageAnalysisResult | null;
+  userVerdict: string;
 }
 
 const UserVerdict = ({ 
   uploadedImage, 
   selectedClassification, 
   onVerdictSubmit, 
-  onDownloadImage, 
+  onDownloadImage,
+  onResetAnalysis,
   isDarkTheme, 
-  analysisResult 
+  analysisResult,
+  userVerdict
 }: UserVerdictProps) => {
   const [verdict, setVerdict] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Resetar campo quando nova análise é iniciada
+  useEffect(() => {
+    if (!uploadedImage) {
+      setVerdict('');
+      setIsSubmitted(false);
+    }
+  }, [uploadedImage]);
+
+  // Detectar se análise foi finalizada
+  useEffect(() => {
+    if (userVerdict && analysisResult) {
+      setIsSubmitted(true);
+    }
+  }, [userVerdict, analysisResult]);
 
   const handleSubmit = () => {
     if (verdict.trim()) {
@@ -37,6 +56,7 @@ const UserVerdict = ({
   const handleNewAnalysis = () => {
     setVerdict('');
     setIsSubmitted(false);
+    onResetAnalysis();
   };
 
   const getClassificationName = (id: string) => {
@@ -50,7 +70,7 @@ const UserVerdict = ({
 
   if (!uploadedImage || !selectedClassification) {
     return (
-      <Card className={`shadow-lg border-2 opacity-50 ${
+      <Card className={`border-2 ${
         isDarkTheme 
           ? 'bg-black border-orange-500 text-orange-100' 
           : 'bg-white border-gray-200'
@@ -84,7 +104,7 @@ const UserVerdict = ({
   const isUserCorrect = analysisResult ? selectedClassification === analysisResult.suggestedClassification : null;
 
   return (
-    <Card className={`shadow-lg border-2 ${
+    <Card className={`border-2 ${
       isDarkTheme 
         ? 'bg-black border-orange-500 text-orange-100' 
         : 'bg-white border-purple-200'
@@ -158,7 +178,7 @@ const UserVerdict = ({
               placeholder="Descreva o que você vê e por que classificou assim..."
               rows={4}
               disabled={isSubmitted}
-              className={`${
+              className={`resize-none ${
                 isDarkTheme 
                   ? 'bg-orange-900/50 border-orange-600 text-orange-100 placeholder:text-orange-400' 
                   : 'bg-purple-50 border-purple-200'
@@ -184,13 +204,13 @@ const UserVerdict = ({
             ) : (
               <Button
                 onClick={handleNewAnalysis}
-                className={`flex-1 text-lg font-bold ${
+                className={`flex-1 text-base font-bold ${
                   isDarkTheme 
                     ? 'bg-green-600 hover:bg-green-700 text-white' 
                     : 'bg-green-600 hover:bg-green-700 text-white'
                 }`}
               >
-                <RotateCcw className="h-5 w-5 mr-2" />
+                <RotateCcw className="h-4 w-4 mr-2" />
                 🔄 Iniciar Nova Análise
               </Button>
             )}
@@ -209,7 +229,7 @@ const UserVerdict = ({
             </Button>
           </div>
 
-          {isSubmitted && !analysisResult && (
+          {isSubmitted && analysisResult && (
             <div className={`p-3 rounded-lg border text-center ${
               isDarkTheme 
                 ? 'bg-green-900/50 border-green-600' 
@@ -218,7 +238,7 @@ const UserVerdict = ({
               <p className={`text-sm font-medium ${
                 isDarkTheme ? 'text-green-200' : 'text-green-800'
               }`}>
-                🎉 Análise concluída!
+                🎉 Análise concluída! Use o botão acima para iniciar uma nova.
               </p>
             </div>
           )}
