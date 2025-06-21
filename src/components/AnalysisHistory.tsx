@@ -1,8 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { History, CheckCircle, XCircle, Trash2 } from 'lucide-react';
+import { History, Trash2, User } from 'lucide-react';
 import { AnalysisHistory as AnalysisHistoryType, getAnalysisHistory, clearAnalysisHistory } from '@/utils/imageAnalysis';
 import { useState, useEffect } from 'react';
 
@@ -84,7 +83,7 @@ const AnalysisHistory = ({ isDarkTheme, onHistoryUpdate }: AnalysisHistoryProps)
         }`}>
           <div className="flex items-center gap-2">
             <History className="h-5 w-5" />
-            📊 Histórico ({history.length})
+            📊 Suas Análises ({history.length})
           </div>
           <Button
             onClick={handleClearHistory}
@@ -97,58 +96,51 @@ const AnalysisHistory = ({ isDarkTheme, onHistoryUpdate }: AnalysisHistoryProps)
         </CardTitle>
       </CardHeader>
       <CardContent className="p-3 max-h-80 overflow-y-auto">
-        <div className="space-y-2">
+        <div className="space-y-3">
           {history.map((analysis) => (
             <div
               key={analysis.id}
-              className={`p-3 rounded-md border text-xs ${
+              className={`p-3 rounded-md border ${
                 isDarkTheme 
-                  ? analysis.isCorrect 
-                    ? 'bg-green-900/30 border-green-700' 
-                    : 'bg-red-900/30 border-red-700'
-                  : analysis.isCorrect
-                    ? 'bg-green-50 border-green-200'
-                    : 'bg-red-50 border-red-200'
+                  ? 'bg-orange-900/30 border-orange-700' 
+                  : 'bg-purple-50 border-purple-200'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1">
-                  {analysis.isCorrect ? (
-                    <CheckCircle className={`h-3 w-3 ${
-                      isDarkTheme ? 'text-green-400' : 'text-green-600'
-                    }`} />
-                  ) : (
-                    <XCircle className={`h-3 w-3 ${
-                      isDarkTheme ? 'text-red-400' : 'text-red-600'
-                    }`} />
-                  )}
-                  <span className={`font-medium truncate max-w-20 ${
+                <div className="flex items-center gap-2">
+                  <User className={`h-3 w-3 ${
+                    isDarkTheme ? 'text-orange-400' : 'text-purple-600'
+                  }`} />
+                  <span className={`font-medium truncate max-w-24 text-xs ${
                     isDarkTheme ? 'text-orange-200' : 'text-gray-800'
                   }`}>
                     {analysis.imageName}
                   </span>
                 </div>
                 
-                <Badge 
-                  variant={analysis.isCorrect ? "default" : "destructive"}
-                  className="text-xs py-0 px-1"
-                >
-                  {analysis.isCorrect ? '✅' : '❌'}
-                </Badge>
+                <div className={`text-xs ${
+                  isDarkTheme ? 'text-yellow-400' : 'text-gray-400'
+                }`}>
+                  {analysis.timestamp.toLocaleDateString()} {analysis.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                </div>
               </div>
               
-              <div className="space-y-1">
-                <div className={`${isDarkTheme ? 'text-orange-300' : 'text-gray-600'}`}>
-                  <strong>Você:</strong> {getClassificationName(analysis.userClassification)}
+              <div className="space-y-2">
+                <div className={`${isDarkTheme ? 'text-orange-300' : 'text-gray-700'}`}>
+                  <strong className="text-xs">Classificação:</strong>
+                  <div className="text-sm font-medium">
+                    {getClassificationName(analysis.userClassification)}
+                  </div>
                 </div>
-                <div className={`${isDarkTheme ? 'text-orange-300' : 'text-gray-600'}`}>
-                  <strong>IA:</strong> {getClassificationName(analysis.suggestedClassification)}
-                </div>
-                <div className={`${isDarkTheme ? 'text-yellow-300' : 'text-gray-500'} truncate`}>
-                  {analysis.userVerdict.substring(0, 40)}...
-                </div>
-                <div className={`${isDarkTheme ? 'text-yellow-400' : 'text-gray-400'} text-xs`}>
-                  {analysis.timestamp.toLocaleDateString()} {analysis.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                
+                <div className={`${isDarkTheme ? 'text-yellow-300' : 'text-gray-600'}`}>
+                  <strong className="text-xs">Veredito:</strong>
+                  <div className="text-xs mt-1 leading-relaxed">
+                    {analysis.userVerdict.length > 100 
+                      ? `${analysis.userVerdict.substring(0, 100)}...` 
+                      : analysis.userVerdict
+                    }
+                  </div>
                 </div>
               </div>
             </div>

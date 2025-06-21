@@ -2,10 +2,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Download, MessageSquare, CheckCircle, FileText, Bot, RotateCcw } from 'lucide-react';
+import { Download, MessageSquare, CheckCircle, FileText, RotateCcw } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { ImageAnalysisResult } from '@/utils/imageAnalysis';
 
 interface UserVerdictProps {
   uploadedImage: string | null;
@@ -14,8 +12,8 @@ interface UserVerdictProps {
   onDownloadImage: () => void;
   onResetAnalysis: () => void;
   isDarkTheme: boolean;
-  analysisResult?: ImageAnalysisResult | null;
   userVerdict: string;
+  isAnalysisComplete: boolean;
 }
 
 const UserVerdict = ({ 
@@ -25,37 +23,26 @@ const UserVerdict = ({
   onDownloadImage,
   onResetAnalysis,
   isDarkTheme, 
-  analysisResult,
-  userVerdict
+  userVerdict,
+  isAnalysisComplete
 }: UserVerdictProps) => {
   const [verdict, setVerdict] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Resetar campo quando nova análise é iniciada
   useEffect(() => {
     if (!uploadedImage) {
       setVerdict('');
-      setIsSubmitted(false);
     }
   }, [uploadedImage]);
-
-  // Detectar se análise foi finalizada
-  useEffect(() => {
-    if (userVerdict && analysisResult) {
-      setIsSubmitted(true);
-    }
-  }, [userVerdict, analysisResult]);
 
   const handleSubmit = () => {
     if (verdict.trim()) {
       onVerdictSubmit(verdict);
-      setIsSubmitted(true);
     }
   };
 
   const handleNewAnalysis = () => {
     setVerdict('');
-    setIsSubmitted(false);
     onResetAnalysis();
   };
 
@@ -101,8 +88,6 @@ const UserVerdict = ({
     );
   }
 
-  const isUserCorrect = analysisResult ? selectedClassification === analysisResult.suggestedClassification : null;
-
   return (
     <Card className={`border-2 ${
       isDarkTheme 
@@ -123,61 +108,44 @@ const UserVerdict = ({
       </CardHeader>
       <CardContent className="p-4">
         <div className="space-y-4">
-          {/* Comparação com IA - só aparece após veredito */}
-          {analysisResult && isSubmitted && (
-            <div className={`p-3 rounded-lg border ${
-              isUserCorrect
-                ? (isDarkTheme 
-                    ? 'bg-green-900/50 border-green-600' 
-                    : 'bg-green-100 border-green-200')
-                : (isDarkTheme 
-                    ? 'bg-yellow-900/50 border-yellow-600' 
-                    : 'bg-yellow-100 border-yellow-200')
-            }`}>
-              <div className="flex items-center gap-2 mb-2">
-                <Bot className={`h-4 w-4 ${
-                  isUserCorrect 
-                    ? (isDarkTheme ? 'text-green-300' : 'text-green-600')
-                    : (isDarkTheme ? 'text-yellow-300' : 'text-yellow-600')
-                }`} />
-                <span className={`font-medium text-sm ${
-                  isUserCorrect 
-                    ? (isDarkTheme ? 'text-green-200' : 'text-green-800')
-                    : (isDarkTheme ? 'text-yellow-200' : 'text-yellow-800')
-                }`}>
-                  {isUserCorrect ? '🎯 Acordo com IA' : '🤔 Divergência'}
-                </span>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div>
-                  <span className={`${isDarkTheme ? 'text-orange-300' : 'text-gray-600'}`}>
-                    Você: {getClassificationName(selectedClassification)}
-                  </span>
-                </div>
-                <div>
-                  <span className={`${isDarkTheme ? 'text-orange-300' : 'text-gray-600'}`}>
-                    IA: {getClassificationName(analysisResult.suggestedClassification)}
-                  </span>
-                </div>
-              </div>
+          {/* Resumo da classificação escolhida */}
+          <div className={`p-3 rounded-lg border ${
+            isDarkTheme 
+              ? 'bg-green-900/50 border-green-600' 
+              : 'bg-green-100 border-green-200'
+          }`}>
+            <div className="flex items-center gap-2 mb-2">
+              <CheckCircle className={`h-4 w-4 ${
+                isDarkTheme ? 'text-green-300' : 'text-green-600'
+              }`} />
+              <span className={`font-medium text-sm ${
+                isDarkTheme ? 'text-green-200' : 'text-green-800'
+              }`}>
+                🎯 Sua Classificação
+              </span>
             </div>
-          )}
+            
+            <div className={`text-sm ${
+              isDarkTheme ? 'text-green-300' : 'text-green-700'
+            }`}>
+              <strong>{getClassificationName(selectedClassification)}</strong>
+            </div>
+          </div>
 
           {/* Campo de veredito */}
           <div className="space-y-2">
             <label className={`block text-sm font-medium ${
               isDarkTheme ? 'text-orange-200' : 'text-gray-700'
             }`}>
-              💭 Sua análise:
+              💭 Sua análise e justificativa:
             </label>
             
             <Textarea
               value={verdict}
               onChange={(e) => setVerdict(e.target.value)}
-              placeholder="Descreva o que você vê e por que classificou assim..."
+              placeholder="Descreva o que você vê na imagem e explique por que você fez essa classificação..."
               rows={4}
-              disabled={isSubmitted}
+              disabled={isAnalysisComplete}
               className={`resize-none ${
                 isDarkTheme 
                   ? 'bg-orange-900/50 border-orange-600 text-orange-100 placeholder:text-orange-400' 
@@ -188,7 +156,7 @@ const UserVerdict = ({
 
           {/* Botões de ação */}
           <div className="flex gap-2">
-            {!isSubmitted ? (
+            {!isAnalysisComplete ? (
               <Button
                 onClick={handleSubmit}
                 disabled={!verdict.trim()}
@@ -229,7 +197,7 @@ const UserVerdict = ({
             </Button>
           </div>
 
-          {isSubmitted && analysisResult && (
+          {isAnalysisComplete && (
             <div className={`p-3 rounded-lg border text-center ${
               isDarkTheme 
                 ? 'bg-green-900/50 border-green-600' 
