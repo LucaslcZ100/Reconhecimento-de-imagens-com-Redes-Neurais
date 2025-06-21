@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { analyzeImage, saveAnalysisToHistory, ImageAnalysisResult } from '@/utils/imageAnalysis';
@@ -9,6 +10,7 @@ import AnalysisHistory from './AnalysisHistory';
 import InteractiveHero from './InteractiveHero';
 import ProjectIntroduction from './ProjectIntroduction';
 import AIUnpluggedInfo from './AIUnpluggedInfo';
+import ModelStatus from './ModelStatus';
 import { Button } from '@/components/ui/button';
 import { Home, BookOpen, RotateCcw } from 'lucide-react';
 
@@ -40,8 +42,8 @@ const ImageRecognitionGame = () => {
       setAnalysisResult(result);
       
       toast({
-        title: "🖼️ Imagem Analisada!",
-        description: `Arquivo "${file.name}" carregado com sucesso.`,
+        title: "🖼️ Análise Completa!",
+        description: `IA analisou "${file.name}" com ${Math.round(result.confidence * 100)}% de confiança.`,
       });
     } catch (error) {
       toast({
@@ -184,6 +186,11 @@ const ImageRecognitionGame = () => {
     <div className="min-h-screen bg-gradient-to-br from-black via-yellow-900 to-orange-900">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <GameHeader />
+
+        {/* Status do Modelo de IA */}
+        <div className="flex justify-center mb-4">
+          <ModelStatus isDarkTheme={true} />
+        </div>
 
         {/* Menu de navegação compacto */}
         <div className="flex justify-center gap-3 mb-6">
