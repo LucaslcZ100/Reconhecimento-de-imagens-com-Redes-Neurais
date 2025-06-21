@@ -130,7 +130,7 @@ export const saveAnalysisToHistory = (analysis: Omit<AnalysisHistory, 'id' | 'ti
   };
   
   const existingHistory = getAnalysisHistory();
-  const updatedHistory = [newAnalysis, ...existingHistory].slice(0, 15); // Manter os últimos 15
+  const updatedHistory = [newAnalysis, ...existingHistory].slice(0, 15);
   
   localStorage.setItem('analysisHistory', JSON.stringify(updatedHistory));
   return newAnalysis;
@@ -139,7 +139,15 @@ export const saveAnalysisToHistory = (analysis: Omit<AnalysisHistory, 'id' | 'ti
 export const getAnalysisHistory = (): AnalysisHistory[] => {
   try {
     const history = localStorage.getItem('analysisHistory');
-    return history ? JSON.parse(history) : [];
+    if (!history) return [];
+    
+    const parsedHistory = JSON.parse(history);
+    
+    // Convert timestamp strings back to Date objects
+    return parsedHistory.map((item: any) => ({
+      ...item,
+      timestamp: new Date(item.timestamp)
+    }));
   } catch {
     return [];
   }
