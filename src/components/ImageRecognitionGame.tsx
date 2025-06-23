@@ -128,7 +128,7 @@ const ImageRecognitionGame = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-yellow-900 to-orange-900">
+    <div className="min-h-screen bg-gradient-to-br from-black via-yellow-900 to-yellow-800">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <GameHeader />
 
@@ -136,7 +136,7 @@ const ImageRecognitionGame = () => {
         <div className="flex justify-center gap-3 mb-8">
           <Button
             onClick={() => setGameState('hero')}
-            className="bg-orange-600 hover:bg-orange-700 text-white"
+            className="bg-yellow-600 hover:bg-yellow-700 text-black font-semibold"
             size="sm"
           >
             <Home className="h-4 w-4 mr-2" />
