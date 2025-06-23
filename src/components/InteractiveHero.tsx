@@ -63,12 +63,6 @@ const InteractiveHero = ({ onStartIntroduction }: InteractiveHeroProps) => {
     }
   ];
 
-  const stats = [
-    { icon: <Users className="h-6 w-6" />, value: "10,000+", label: "Usuários Ativos" },
-    { icon: <CheckCircle className="h-6 w-6" />, value: "99.8%", label: "Precisão" },
-    { icon: <Trophy className="h-6 w-6" />, value: "50,000+", label: "Análises Realizadas" }
-  ];
-
   return (
     <div
       ref={heroRef}
@@ -161,21 +155,6 @@ const InteractiveHero = ({ onStartIntroduction }: InteractiveHeroProps) => {
           </span>
         </p>
 
-        {/* Estatísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
-          {stats.map((stat, index) => (
-            <Card key={index} className="bg-black/40 border-yellow-400/30 backdrop-blur-sm">
-              <CardContent className="p-6 text-center">
-                <div className="flex justify-center mb-3 text-yellow-400">
-                  {stat.icon}
-                </div>
-                <div className="text-3xl font-bold text-yellow-300 mb-2">{stat.value}</div>
-                <div className="text-yellow-200 text-sm">{stat.label}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
         {/* Recursos destacados */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-5xl mx-auto">
           {features.map((feature, index) => (
@@ -187,7 +166,7 @@ const InteractiveHero = ({ onStartIntroduction }: InteractiveHeroProps) => {
                 <h3 className="text-xl font-bold text-black mb-3 bg-yellow-400 px-3 py-1 rounded-lg">
                   {feature.title}
                 </h3>
-                <p className="text-yellow-200 leading-relaxed">{feature.description}</p>
+                <p className="text-black font-medium leading-relaxed">{feature.description}</p>
               </CardContent>
             </Card>
           ))}
@@ -199,7 +178,7 @@ const InteractiveHero = ({ onStartIntroduction }: InteractiveHeroProps) => {
             size="lg"
             className="text-2xl px-12 py-8 font-bold transition-all duration-300 hover:scale-110 bg-gradient-to-r from-yellow-500 to-yellow-400 hover:from-yellow-400 hover:to-yellow-300 text-black shadow-2xl shadow-yellow-500/25 border-2 border-yellow-300 rounded-2xl"
           >
-            🚀 Iniciar Experiência Premium
+            🚀 Iniciar Experiência
           </Button>
         </div>
 
