@@ -152,9 +152,9 @@ const ImageRecognitionGame = () => {
           </Button>
         </div>
 
-        {/* Interface principal com layout otimizado */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {/* Coluna 1: Upload e Classificação */}
+        {/* Interface principal com layout em grade 2x2 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
+          {/* Linha superior: Upload e Classificação */}
           <div className="space-y-6">
             <ImageUploadZone 
               onImageUpload={handleImageUpload}
@@ -162,7 +162,9 @@ const ImageRecognitionGame = () => {
               onClearImage={handleClearImage}
               isDarkTheme={true}
             />
-            
+          </div>
+          
+          <div className="space-y-6">
             <UserClassification 
               onClassification={handleClassification}
               selectedClassification={selectedClassification}
@@ -171,7 +173,7 @@ const ImageRecognitionGame = () => {
             />
           </div>
           
-          {/* Coluna 2: Veredito */}
+          {/* Linha inferior: Veredito e Histórico */}
           <div className="space-y-6">
             <UserVerdict 
               uploadedImage={uploadedImage}
@@ -185,7 +187,6 @@ const ImageRecognitionGame = () => {
             />
           </div>
           
-          {/* Coluna 3: Histórico */}
           <div className="space-y-6">
             <AnalysisHistory 
               isDarkTheme={true}
