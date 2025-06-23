@@ -122,18 +122,6 @@ const InteractiveHero = ({ onStartIntroduction }: InteractiveHeroProps) => {
 
       {/* Conteúdo principal */}
       <div className="relative z-10 text-center max-w-6xl mx-auto px-6">
-        {/* Badges de credibilidade */}
-        <div className="flex justify-center gap-4 mb-6">
-          <div className="flex items-center gap-2 bg-yellow-500/20 px-4 py-2 rounded-full border border-yellow-400/30">
-            <Star className="h-4 w-4 text-yellow-400 fill-current" />
-            <span className="text-yellow-200 text-sm font-medium">Certificado IA</span>
-          </div>
-          <div className="flex items-center gap-2 bg-yellow-500/20 px-4 py-2 rounded-full border border-yellow-400/30">
-            <Trophy className="h-4 w-4 text-yellow-400" />
-            <span className="text-yellow-200 text-sm font-medium">Award Winner</span>
-          </div>
-        </div>
-
         <div className="mb-12 flex justify-center items-center gap-6">
           <Brain className="h-20 w-20 animate-pulse text-yellow-400 drop-shadow-lg" />
           <Eye className="h-16 w-16 animate-bounce text-yellow-300 drop-shadow-lg" />
@@ -158,7 +146,7 @@ const InteractiveHero = ({ onStartIntroduction }: InteractiveHeroProps) => {
         {/* Recursos destacados */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-5xl mx-auto">
           {features.map((feature, index) => (
-            <Card key={index} className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border-yellow-400/50 backdrop-blur-sm hover:scale-105 transition-transform duration-300">
+            <Card key={index} className="bg-black border-yellow-400/50 backdrop-blur-sm hover:scale-105 transition-transform duration-300">
               <CardContent className="p-6 text-center">
                 <div className="flex justify-center mb-4">
                   {feature.icon}
@@ -166,7 +154,7 @@ const InteractiveHero = ({ onStartIntroduction }: InteractiveHeroProps) => {
                 <h3 className="text-xl font-bold text-black mb-3 bg-yellow-400 px-3 py-1 rounded-lg">
                   {feature.title}
                 </h3>
-                <p className="text-black font-medium leading-relaxed">{feature.description}</p>
+                <p className="text-white font-medium leading-relaxed">{feature.description}</p>
               </CardContent>
             </Card>
           ))}
