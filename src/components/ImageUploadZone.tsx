@@ -61,16 +61,16 @@ const ImageUploadZone = ({ onImageUpload, uploadedImage, onClearImage, isDarkThe
   return (
     <Card className={`shadow-xl border-3 ${
       isDarkTheme 
-        ? 'bg-black border-orange-500 text-orange-100' 
+        ? 'bg-black border-yellow-500 text-yellow-100' 
         : 'bg-white border-blue-200'
     }`}>
       <CardHeader className={`${
         isDarkTheme 
-          ? 'bg-gradient-to-r from-orange-900 to-yellow-900' 
+          ? 'bg-gradient-to-r from-yellow-900 to-yellow-800' 
           : 'bg-gradient-to-r from-blue-50 to-indigo-50'
       }`}>
         <CardTitle className={`text-xl flex items-center gap-2 ${
-          isDarkTheme ? 'text-orange-300' : 'text-blue-600'
+          isDarkTheme ? 'text-yellow-300' : 'text-blue-600'
         }`}>
           <Camera className="h-6 w-6" />
           📤 Upload de Imagem
@@ -86,8 +86,8 @@ const ImageUploadZone = ({ onImageUpload, uploadedImage, onClearImage, isDarkThe
           <div
             className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer ${
               isDragOver
-                ? (isDarkTheme ? 'border-orange-400 bg-orange-900/20' : 'border-blue-400 bg-blue-50')
-                : (isDarkTheme ? 'border-orange-600' : 'border-gray-300')
+                ? (isDarkTheme ? 'border-yellow-400 bg-yellow-900/20' : 'border-blue-400 bg-blue-50')
+                : (isDarkTheme ? 'border-yellow-600' : 'border-gray-300')
             }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -103,11 +103,11 @@ const ImageUploadZone = ({ onImageUpload, uploadedImage, onClearImage, isDarkThe
             />
             
             <Upload className={`h-12 w-12 mx-auto mb-4 ${
-              isDarkTheme ? 'text-orange-400' : 'text-gray-400'
+              isDarkTheme ? 'text-yellow-400' : 'text-gray-400'
             }`} />
             
             <p className={`text-lg font-medium mb-2 ${
-              isDarkTheme ? 'text-orange-200' : 'text-gray-700'
+              isDarkTheme ? 'text-yellow-200' : 'text-gray-700'
             }`}>
               {isUploading ? '⏳ Processando imagem...' : 'Arraste uma imagem ou clique para selecionar'}
             </p>
@@ -121,7 +121,7 @@ const ImageUploadZone = ({ onImageUpload, uploadedImage, onClearImage, isDarkThe
             <Button 
               className={`mt-4 ${
                 isDarkTheme 
-                  ? 'bg-orange-500 hover:bg-orange-400 text-black' 
+                  ? 'bg-yellow-500 hover:bg-yellow-400 text-black' 
                   : 'bg-blue-500 hover:bg-blue-400 text-white'
               }`}
               disabled={isUploading}
@@ -136,7 +136,7 @@ const ImageUploadZone = ({ onImageUpload, uploadedImage, onClearImage, isDarkThe
               <img 
                 src={uploadedImage} 
                 alt="Imagem enviada"
-                className="w-full h-64 object-cover rounded-lg border-2 border-orange-400 shadow-lg"
+                className="w-full h-64 object-cover rounded-lg border-2 border-yellow-400 shadow-lg"
               />
               <Button
                 onClick={onClearImage}
@@ -150,7 +150,7 @@ const ImageUploadZone = ({ onImageUpload, uploadedImage, onClearImage, isDarkThe
             
             <div className={`p-4 rounded-lg border ${
               isDarkTheme 
-                ? 'bg-gradient-to-r from-orange-900/50 to-yellow-900/50 border-orange-600 text-orange-200' 
+                ? 'bg-gradient-to-r from-yellow-900/50 to-yellow-800/50 border-yellow-600 text-yellow-200' 
                 : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 text-green-800'
             }`}>
               <p className="text-sm font-medium">

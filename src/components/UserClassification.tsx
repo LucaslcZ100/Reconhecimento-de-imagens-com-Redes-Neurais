@@ -61,16 +61,16 @@ const UserClassification = ({
     return (
       <Card className={`shadow-xl border-3 transition-all duration-500 opacity-50 ${
         isDarkTheme 
-          ? 'bg-black border-orange-500 text-orange-100' 
+          ? 'bg-black border-yellow-500 text-yellow-100' 
           : 'bg-white border-gray-200'
       }`}>
         <CardHeader className={`text-center ${
           isDarkTheme 
-            ? 'bg-gradient-to-r from-orange-900 to-yellow-900' 
+            ? 'bg-gradient-to-r from-yellow-900 to-yellow-800' 
             : 'bg-gradient-to-r from-gray-50 to-gray-100'
         }`}>
           <CardTitle className={`text-xl flex items-center justify-center gap-2 ${
-            isDarkTheme ? 'text-orange-300' : 'text-gray-600'
+            isDarkTheme ? 'text-yellow-300' : 'text-gray-600'
           }`}>
             <User className="h-6 w-6" />
             🤔 Sua Classificação
@@ -78,10 +78,10 @@ const UserClassification = ({
         </CardHeader>
         <CardContent className="p-6 text-center">
           <Circle className={`h-12 w-12 mx-auto mb-4 ${
-            isDarkTheme ? 'text-orange-400' : 'text-gray-400'
+            isDarkTheme ? 'text-yellow-400' : 'text-gray-400'
           }`} />
           <p className={`${
-            isDarkTheme ? 'text-orange-300' : 'text-gray-500'
+            isDarkTheme ? 'text-yellow-300' : 'text-gray-500'
           }`}>
             Primeiro faça o upload de uma imagem
           </p>
@@ -93,16 +93,16 @@ const UserClassification = ({
   return (
     <Card className={`shadow-xl border-3 transition-all duration-500 ${
       isDarkTheme 
-        ? 'bg-black border-orange-500 hover:border-orange-400 text-orange-100 hover:shadow-orange-500/20' 
+        ? 'bg-black border-yellow-500 hover:border-yellow-400 text-yellow-100 hover:shadow-yellow-500/20' 
         : 'bg-white border-green-200 hover:border-green-400 hover:shadow-green-500/20'
     }`}>
       <CardHeader className={`text-center ${
         isDarkTheme 
-          ? 'bg-gradient-to-r from-orange-900 to-yellow-900' 
+          ? 'bg-gradient-to-r from-yellow-900 to-yellow-800' 
           : 'bg-gradient-to-r from-green-50 to-teal-50'
       } transition-all duration-300`}>
         <CardTitle className={`text-xl flex items-center justify-center gap-2 ${
-          isDarkTheme ? 'text-orange-300' : 'text-green-600'
+          isDarkTheme ? 'text-yellow-300' : 'text-green-600'
         }`}>
           <User className="h-6 w-6" />
           🤔 Sua Classificação
@@ -134,14 +134,14 @@ const UserClassification = ({
                   <div className={`flex flex-col items-center space-y-2 p-3 border-2 rounded-lg cursor-pointer transition-all duration-300 h-full ${
                     selectedClassification === option.id 
                       ? (isDarkTheme 
-                          ? 'border-orange-400 bg-orange-900 shadow-lg shadow-orange-500/30' 
+                          ? 'border-yellow-400 bg-yellow-900 shadow-lg shadow-yellow-500/30' 
                           : 'border-green-400 bg-green-50 shadow-lg shadow-green-500/30') 
                       : hoveredOption === option.id
                         ? (isDarkTheme 
-                            ? 'border-orange-500 bg-orange-800 shadow-md' 
+                            ? 'border-yellow-500 bg-yellow-800 shadow-md' 
                             : 'border-gray-300 bg-gray-50 shadow-md')
                         : (isDarkTheme 
-                            ? 'border-orange-600 hover:border-orange-500 hover:bg-orange-800' 
+                            ? 'border-yellow-600 hover:border-yellow-500 hover:bg-yellow-800' 
                             : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50')
                   }`}>
                     <div className="flex items-center gap-2">
@@ -150,7 +150,7 @@ const UserClassification = ({
                         id={option.id}
                         className={`transition-all duration-300 ${
                           isDarkTheme 
-                            ? 'data-[state=checked]:border-orange-400 data-[state=checked]:text-orange-400' 
+                            ? 'data-[state=checked]:border-yellow-400 data-[state=checked]:text-yellow-400' 
                             : 'data-[state=checked]:border-green-500 data-[state=checked]:text-green-500'
                         }`}
                       />
@@ -169,14 +169,14 @@ const UserClassification = ({
                           {option.name}
                         </p>
                         <p className={`text-xs mb-2 ${
-                          isDarkTheme ? 'text-orange-300' : 'text-gray-600'
+                          isDarkTheme ? 'text-yellow-300' : 'text-gray-600'
                         }`}>
                           {option.description}
                         </p>
                         <div className="flex flex-wrap justify-center gap-1">
                           {option.examples.map((example, i) => (
                             <span key={i} className={`text-xs px-2 py-1 rounded-full ${
-                              isDarkTheme ? 'bg-orange-800 text-orange-200' : 'bg-gray-100'
+                              isDarkTheme ? 'bg-yellow-800 text-yellow-200' : 'bg-gray-100'
                             }`}>
                               {example}
                             </span>
@@ -187,7 +187,7 @@ const UserClassification = ({
                     
                     {selectedClassification === option.id && (
                       <div className={`absolute -top-1 -right-1 rounded-full p-1 ${
-                        isDarkTheme ? 'bg-orange-500 text-black' : 'bg-green-500 text-white'
+                        isDarkTheme ? 'bg-yellow-500 text-black' : 'bg-green-500 text-white'
                       }`}>
                         <CheckCircle className="h-3 w-3" />
                       </div>
@@ -201,11 +201,11 @@ const UserClassification = ({
           {selectedClassification && (
             <div className={`p-3 rounded-lg border mt-4 transition-all duration-500 ${
               isDarkTheme 
-                ? 'bg-gradient-to-r from-orange-900 to-yellow-900 border-orange-600' 
+                ? 'bg-gradient-to-r from-yellow-900 to-yellow-800 border-yellow-600' 
                 : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
             }`}>
               <p className={`text-sm ${
-                isDarkTheme ? 'text-orange-200' : 'text-blue-800'
+                isDarkTheme ? 'text-yellow-200' : 'text-blue-800'
               } flex items-center justify-center gap-2`}>
                 <CheckCircle className="h-4 w-4" />
                 <span className="font-medium">✅ Classificação Registrada:</span> 

@@ -41,16 +41,16 @@ const AnalysisHistory = ({ isDarkTheme, onHistoryUpdate }: AnalysisHistoryProps)
     return (
       <Card className={`border-2 ${
         isDarkTheme 
-          ? 'bg-black border-orange-500 text-orange-100' 
+          ? 'bg-black border-yellow-500 text-yellow-100' 
           : 'bg-white border-gray-200'
       }`}>
         <CardHeader className={`${
           isDarkTheme 
-            ? 'bg-gradient-to-r from-orange-900 to-yellow-900' 
+            ? 'bg-gradient-to-r from-yellow-900 to-yellow-800' 
             : 'bg-gradient-to-r from-gray-50 to-gray-100'
         }`}>
           <CardTitle className={`text-lg flex items-center gap-2 ${
-            isDarkTheme ? 'text-orange-300' : 'text-gray-600'
+            isDarkTheme ? 'text-yellow-300' : 'text-gray-600'
           }`}>
             <History className="h-5 w-5" />
             📊 Histórico
@@ -58,7 +58,7 @@ const AnalysisHistory = ({ isDarkTheme, onHistoryUpdate }: AnalysisHistoryProps)
         </CardHeader>
         <CardContent className="p-4 text-center">
           <p className={`text-sm ${
-            isDarkTheme ? 'text-orange-300' : 'text-gray-500'
+            isDarkTheme ? 'text-yellow-300' : 'text-gray-500'
           }`}>
             Nenhuma análise realizada
           </p>
@@ -70,16 +70,16 @@ const AnalysisHistory = ({ isDarkTheme, onHistoryUpdate }: AnalysisHistoryProps)
   return (
     <Card className={`border-2 ${
       isDarkTheme 
-        ? 'bg-black border-orange-500 text-orange-100' 
+        ? 'bg-black border-yellow-500 text-yellow-100' 
         : 'bg-white border-purple-200'
     }`}>
       <CardHeader className={`${
         isDarkTheme 
-          ? 'bg-gradient-to-r from-orange-900 to-yellow-900' 
+          ? 'bg-gradient-to-r from-yellow-900 to-yellow-800' 
           : 'bg-gradient-to-r from-purple-50 to-violet-50'
       }`}>
         <CardTitle className={`text-lg flex items-center justify-between ${
-          isDarkTheme ? 'text-orange-300' : 'text-purple-600'
+          isDarkTheme ? 'text-yellow-300' : 'text-purple-600'
         }`}>
           <div className="flex items-center gap-2">
             <History className="h-5 w-5" />
@@ -102,17 +102,17 @@ const AnalysisHistory = ({ isDarkTheme, onHistoryUpdate }: AnalysisHistoryProps)
               key={analysis.id}
               className={`p-3 rounded-md border ${
                 isDarkTheme 
-                  ? 'bg-orange-900/30 border-orange-700' 
+                  ? 'bg-yellow-900/30 border-yellow-700' 
                   : 'bg-purple-50 border-purple-200'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <User className={`h-3 w-3 ${
-                    isDarkTheme ? 'text-orange-400' : 'text-purple-600'
+                    isDarkTheme ? 'text-yellow-400' : 'text-purple-600'
                   }`} />
                   <span className={`font-medium truncate max-w-24 text-xs ${
-                    isDarkTheme ? 'text-orange-200' : 'text-gray-800'
+                    isDarkTheme ? 'text-yellow-200' : 'text-gray-800'
                   }`}>
                     {analysis.imageName}
                   </span>
@@ -126,7 +126,7 @@ const AnalysisHistory = ({ isDarkTheme, onHistoryUpdate }: AnalysisHistoryProps)
               </div>
               
               <div className="space-y-2">
-                <div className={`${isDarkTheme ? 'text-orange-300' : 'text-gray-700'}`}>
+                <div className={`${isDarkTheme ? 'text-yellow-300' : 'text-gray-700'}`}>
                   <strong className="text-xs">Classificação:</strong>
                   <div className="text-sm font-medium">
                     {getClassificationName(analysis.userClassification)}

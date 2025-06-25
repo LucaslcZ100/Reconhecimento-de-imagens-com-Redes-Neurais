@@ -59,16 +59,16 @@ const UserVerdict = ({
     return (
       <Card className={`border-2 ${
         isDarkTheme 
-          ? 'bg-black border-orange-500 text-orange-100' 
+          ? 'bg-black border-yellow-500 text-yellow-100' 
           : 'bg-white border-gray-200'
       }`}>
         <CardHeader className={`${
           isDarkTheme 
-            ? 'bg-gradient-to-r from-orange-900 to-yellow-900' 
+            ? 'bg-gradient-to-r from-yellow-900 to-yellow-800' 
             : 'bg-gradient-to-r from-gray-50 to-gray-100'
         }`}>
           <CardTitle className={`text-lg flex items-center gap-2 ${
-            isDarkTheme ? 'text-orange-300' : 'text-gray-600'
+            isDarkTheme ? 'text-yellow-300' : 'text-gray-600'
           }`}>
             <MessageSquare className="h-5 w-5" />
             📝 Seu Veredito
@@ -76,10 +76,10 @@ const UserVerdict = ({
         </CardHeader>
         <CardContent className="p-4 text-center">
           <FileText className={`h-10 w-10 mx-auto mb-3 ${
-            isDarkTheme ? 'text-orange-400' : 'text-gray-400'
+            isDarkTheme ? 'text-yellow-400' : 'text-gray-400'
           }`} />
           <p className={`text-sm ${
-            isDarkTheme ? 'text-orange-300' : 'text-gray-500'
+            isDarkTheme ? 'text-yellow-300' : 'text-gray-500'
           }`}>
             Complete os passos anteriores primeiro
           </p>
@@ -91,16 +91,16 @@ const UserVerdict = ({
   return (
     <Card className={`border-2 ${
       isDarkTheme 
-        ? 'bg-black border-orange-500 text-orange-100' 
+        ? 'bg-black border-yellow-500 text-yellow-100' 
         : 'bg-white border-purple-200'
     }`}>
       <CardHeader className={`${
         isDarkTheme 
-          ? 'bg-gradient-to-r from-orange-900 to-yellow-900' 
+          ? 'bg-gradient-to-r from-yellow-900 to-yellow-800' 
           : 'bg-gradient-to-r from-purple-50 to-violet-50'
       }`}>
         <CardTitle className={`text-lg flex items-center gap-2 ${
-          isDarkTheme ? 'text-orange-300' : 'text-purple-600'
+          isDarkTheme ? 'text-yellow-300' : 'text-purple-600'
         }`}>
           <MessageSquare className="h-5 w-5" />
           📝 Seu Veredito
@@ -135,7 +135,7 @@ const UserVerdict = ({
           {/* Campo de veredito */}
           <div className="space-y-2">
             <label className={`block text-sm font-medium ${
-              isDarkTheme ? 'text-orange-200' : 'text-gray-700'
+              isDarkTheme ? 'text-yellow-200' : 'text-gray-700'
             }`}>
               💭 Sua análise e justificativa:
             </label>
@@ -148,7 +148,7 @@ const UserVerdict = ({
               disabled={isAnalysisComplete}
               className={`resize-none ${
                 isDarkTheme 
-                  ? 'bg-orange-900/50 border-orange-600 text-orange-100 placeholder:text-orange-400' 
+                  ? 'bg-yellow-900/50 border-yellow-600 text-yellow-100 placeholder:text-yellow-400' 
                   : 'bg-purple-50 border-purple-200'
               }`}
             />
@@ -162,7 +162,7 @@ const UserVerdict = ({
                 disabled={!verdict.trim()}
                 className={`flex-1 ${
                   isDarkTheme 
-                    ? 'bg-orange-500 hover:bg-orange-400 text-black' 
+                    ? 'bg-yellow-500 hover:bg-yellow-400 text-black' 
                     : 'bg-purple-600 hover:bg-purple-700 text-white'
                 }`}
               >
@@ -189,7 +189,7 @@ const UserVerdict = ({
               size="sm"
               className={`${
                 isDarkTheme 
-                  ? 'bg-orange-800 border-orange-600 text-orange-200 hover:bg-orange-700' 
+                  ? 'bg-yellow-800 border-yellow-600 text-yellow-200 hover:bg-yellow-700' 
                   : 'border-purple-200 text-purple-600 hover:bg-purple-50'
               }`}
             >
