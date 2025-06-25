@@ -203,7 +203,7 @@ const ProjectIntroduction = ({ onStartGame }: ProjectIntroductionProps) => {
                   onClick={prevStep}
                   disabled={currentStep === 0}
                   variant="outline"
-                  className="border-yellow-600 text-yellow-300 hover:bg-yellow-800"
+                  className="border-yellow-600 text-black bg-yellow-600 hover:bg-yellow-500"
                 >
                   Anterior
                 </Button>
